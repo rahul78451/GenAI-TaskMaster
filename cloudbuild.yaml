@@ -1,0 +1,48 @@
+steps:
+  # Step 1: Build Docker image for backend
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/genai-backend:latest'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/genai-backend:$COMMIT_SHA'
+      - '-f'
+      - 'backend/Dockerfile'
+      - '.'
+    id: 'build-backend'
+
+  # Step 2: Push backend image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/genai-backend']
+    id: 'push-backend'
+
+  # Step 3: Deploy backend to Cloud Run
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+      - run
+      - --filename=k8s/
+      - --image=gcr.io/$PROJECT_ID/genai-backend:$COMMIT_SHA
+      - --location=us-central1
+      - --cluster=genai-cluster
+    id: 'deploy-backend'
+
+  # Step 4: Deploy frontend to Cloud Storage + CDN
+  - name: 'gcr.io/cloud-builders/gcs'
+    args:
+      - '-m'
+      - 'cp'
+      - '-r'
+      - 'frontend/*'
+      - 'gs://$PROJECT_ID-genai-frontend/'
+    id: 'deploy-frontend'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'N1_HIGHCPU_8'
+
+images:
+  - 'gcr.io/$PROJECT_ID/genai-backend:latest'
+  - 'gcr.io/$PROJECT_ID/genai-backend:$COMMIT_SHA'
+
+timeout: 3600s

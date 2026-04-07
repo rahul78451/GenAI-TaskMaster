@@ -1,0 +1,19 @@
+runtime: python311
+
+env: standard
+
+entrypoint: gunicorn -w 4 -b 0.0.0.0:8080 app.main:app
+
+env_variables:
+  DATABASE_URL: "sqlite:///./app.db"
+  DEBUG: "False"
+
+automatic_scaling:
+  min_instances: 1
+  max_instances: 10
+
+handlers:
+  - url: /.*
+    script: auto
+    secure: always
+    redirect_http_response_code: 301

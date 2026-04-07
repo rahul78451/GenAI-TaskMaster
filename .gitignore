@@ -1,0 +1,99 @@
+# ===========================
+# ENVIRONMENT & SECRETS
+# ===========================
+.env
+.env.local
+.env.production
+.env.staging
+backend/.env
+frontend/.env
+
+# ===========================
+# API KEYS & CREDENTIALS
+# ===========================
+*.pem
+*.key
+*.cert
+*credentials*.json
+*service-account*.json
+*secret*
+*token*
+
+# ===========================
+# DATABASE FILES
+# ===========================
+*.db
+*.sqlite
+*.sqlite3
+app.db
+backend/app.db
+
+# ===========================
+# PYTHON
+# ===========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+backend/venv/
+backend/__pycache__/
+backend/app/__pycache__/
+venv/
+.Python
+env/
+*.egg-info/
+dist/
+build/
+
+# ===========================
+# NODE.JS
+# ===========================
+node_modules/
+package-lock.json
+frontend/node_modules/
+frontend/package-lock.json
+backend/package-lock.json
+
+# ===========================
+# IDE & EDITOR
+# ===========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ===========================
+# BUILD & DEPLOY
+# ===========================
+*.log
+logs/
+tmp/
+temp/
+tempCodeRunnerFile.js
+frontend/tempCodeRunnerFile.js
+
+# ===========================
+# BACKUP FILES (don't push to GitHub)
+# ===========================
+frontend/app_backup_*.js
+frontend/app_backup_old.js
+frontend/app_backup_simple.js
+frontend/debug.html
+frontend/diagnostic.html
+frontend/test-simple.html
+frontend/test.html
+
+# ===========================
+# DOCKER
+# ===========================
+docker-compose.prod.yml
+
+# ===========================
+# OS FILES
+# ===========================
+.DS_Store
+Thumbs.db
+Desktop.ini
