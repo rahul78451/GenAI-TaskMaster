@@ -181,7 +181,9 @@ User Request: "Create a high priority task for tomorrow's meeting and add it to 
                     │  Task + Event    │
                     │  Created ✅      │
                     └─────────────────┘
-###📁 Project Structure
+
+
+##📂 Project Structure
 
 GenAI-TaskMaster/
 ├── 📂 backend/
