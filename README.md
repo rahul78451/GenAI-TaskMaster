@@ -1,4 +1,4 @@
-<img width="2559" height="1361" alt="Screenshot 2026-04-07 210705" src="https://github.com/user-attachments/assets/c22e2bbf-f7bf-4a11-abfa-2d3730720ffa" /><div align="center">
+<div align="center">
 
 # 🤖 GenAI-TaskMaster
 
