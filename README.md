@@ -65,4 +65,157 @@
 
 ## ✨ Features
 
+### 🚀 Core Features
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| 📋 **Task Management** | Full CRUD with priority levels (high/medium/low) and status tracking | ✅ Live |
+| 📅 **Schedule Management** | Calendar events with time, location, and AI integration | ✅ Live |
+| 📝 **Notes System** | Create, edit, search, and organize notes | ✅ Live |
+| 🤖 **AI Chat Assistant** | Conversational AI powered by Google Gemini | ✅ Live |
+| ⚙️ **Workflow Automation** | Natural language to multi-step task execution | ✅ Live |
+| 🔍 **Universal Search** | Search across tasks, events, and notes simultaneously | ✅ Live |
+| 💡 **AI Suggestions** | Smart productivity recommendations and fixes | ✅ Live |
+| 📊 **Dashboard Analytics** | Real-time productivity overview and statistics | ✅ Live |
+| 🎤 **Voice Input** | Voice-to-text for hands-free task creation | ✅ Live |
+| 🔊 **Text-to-Speech** | AI responses read aloud | ✅ Live |
+| 💬 **Floating Chat** | Quick access AI assistant on any page | ✅ Live |
+| 🌐 **MCP Integration** | Model Context Protocol for tool coordination | ✅ Live |
+
+### 🎯 AI Capabilities
+
+- **Natural Language Processing** — Understand complex task descriptions
+- **Smart Task Prioritization** — AI-powered priority recommendations
+- **Conflict Detection** — Identify scheduling conflicts automatically
+- **Daily Plan Generation** — Create optimized daily plans
+- **Productivity Analysis** — Analyze work patterns and suggest improvements
+- **Multi-step Workflows** — Execute complex operations from simple commands
+
+---
+
+## 🌐 Live Demo
+
+| Component | URL | Status |
+|-----------|-----|--------|
+| 🖥️ **Frontend** | [Live App](https://storage.googleapis.com/genai-task-manager-frontend-2025/index.html) | ✅ Online |
+| ⚙️ **Backend API** | [API Docs](https://genai-task-manager-backend-232002352100.us-central1.run.app/docs) | ✅ Online |
+| 📡 **Health Check** | [Status](https://genai-task-manager-backend-232002352100.us-central1.run.app/health) | ✅ Healthy |
+
+### Try It Now!
+```bash
+# Test the AI Chat
+curl -X POST "https://genai-task-manager-backend-232002352100.us-central1.run.app/api/ai-chat" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hello, what can you do?"}'
+
 ### 🧠 Multi-Agent AI Architecture
+
+┌────────────────────────────────────────────────────────────────┐
+│                        CLIENT LAYER                            │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │              React 18 + Tailwind CSS                     │  │
+│  │  ┌──────┐ ┌──────┐ ┌────────┐ ┌─────┐ ┌──────────────┐ │  │
+│  │  │Dashbd│ │Tasks │ │Schedule│ │Notes│ │  AI Assistant │ │  │
+│  │  └──────┘ └──────┘ └────────┘ └─────┘ └──────────────┘ │  │
+│  │              ↕ API Client (fetch)                        │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                            ↕ HTTPS                             │
+├────────────────────────────────────────────────────────────────┤
+│                        API LAYER                               │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │              FastAPI + Uvicorn                            │  │
+│  │  ┌──────────┐ ┌───────────┐ ┌──────────┐ ┌───────────┐  │  │
+│  │  │/api/tasks│ │/api/sched │ │/api/notes│ │/api/ai-chat│  │  │
+│  │  └──────────┘ └───────────┘ └──────────┘ └───────────┘  │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                            ↕                                   │
+├────────────────────────────────────────────────────────────────┤
+│                    INTELLIGENCE LAYER                          │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │           Multi-Agent Coordinator                        │  │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌───────────┐  │  │
+│  │  │Task Agent│ │Sched Agnt│ │Note Agent│ │Tool Agent  │  │  │
+│  │  └──────────┘ └──────────┘ └──────────┘ └───────────┘  │  │
+│  │                     ↕                                    │  │
+│  │            Google Gemini AI API                          │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                            ↕                                   │
+├────────────────────────────────────────────────────────────────┤
+│                      DATA LAYER                                │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │         SQLite + SQLAlchemy ORM                          │  │
+│  │  ┌──────┐ ┌────────┐ ┌─────┐ ┌──────────┐              │  │
+│  │  │Tasks │ │Schedule│ │Notes│ │Workflows │              │  │
+│  │  └──────┘ └────────┘ └─────┘ └──────────┘              │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                │
+├────────────────────────────────────────────────────────────────┤
+│                   DEPLOYMENT LAYER                             │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐  │
+│  │  Google Cloud    │  │ Google Cloud    │  │   Docker     │  │
+│  │  Run (Backend)   │  │ Storage (FE)   │  │  Container   │  │
+│  └─────────────────┘  └─────────────────┘  └──────────────┘  │
+└────────────────────────────────────────────────────────────────┘
+
+User Request: "Create a high priority task for tomorrow's meeting and add it to my schedule"
+                                    │
+                                    ▼
+                          ┌─────────────────┐
+                          │   Coordinator    │
+                          │     Agent        │
+                          └─────────────────┘
+                           │              │
+                    ┌──────┘              └──────┐
+                    ▼                            ▼
+            ┌──────────────┐            ┌──────────────┐
+            │  Task Agent  │            │Schedule Agent│
+            │              │            │              │
+            │ Creates task │            │Creates event │
+            │ priority:high│            │ tomorrow     │
+            └──────────────┘            └──────────────┘
+                    │                            │
+                    └──────────┬─────────────────┘
+                               ▼
+                    ┌─────────────────┐
+                    │  Unified Result  │
+                    │  Task + Event    │
+                    │  Created ✅      │
+                    └─────────────────┘
+###📁 Project Structure
+
+GenAI-TaskMaster/
+├── 📂 backend/
+│   ├── 📂 app/
+│   │   ├── 📂 agents/              # AI Agent System
+│   │   │   ├── coordinator.py      # Main coordinator agent
+│   │   │   ├── task_agent.py       # Task management agent
+│   │   │   ├── schedule_agent.py   # Schedule management agent
+│   │   │   ├── note_agent.py       # Notes management agent
+│   │   │   └── tool_agent.py       # MCP tool agent
+│   │   ├── 📂 tools/               # MCP Tool Integration
+│   │   │   ├── mcp_tools.py        # Model Context Protocol tools
+│   │   │   ├── task_tools.py       # Task-specific tools
+│   │   │   ├── schedule_tools.py   # Schedule-specific tools
+│   │   │   └── note_tools.py       # Note-specific tools
+│   │   ├── 📂 models/              # Data Models
+│   │   │   ├── schemas.py          # Pydantic schemas
+│   │   │   └── database.py         # SQLAlchemy models
+│   │   └── __init__.py
+│   ├── main.py                     # FastAPI application entry point
+│   ├── requirements.txt            # Python dependencies
+│   ├── Dockerfile                  # Docker container config
+│   ├── Dockerfile.prod             # Production Docker config
+│   ├── .env.example                # Environment template
+│   └── test_*.py                   # Test files
+├── 📂 frontend/
+│   ├── index.html                  # Main HTML entry point
+│   ├── app.js                      # React application (190KB)
+│   ├── api.js                      # API client class
+│   └── package.json                # Frontend config
+├── docker-compose.yml              # Docker Compose config
+├── cloudbuild.yaml                 # Cloud Build config
+├── deploy-gcp.sh                   # GCP deployment script
+├── app.yaml                        # App Engine config
+├── .gitignore                      # Git ignore rules
+├── LICENSE                         # MIT License
+└── README.md                       # This file
