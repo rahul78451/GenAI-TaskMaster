@@ -1,4 +1,4 @@
-<div align="center">
+<img width="2559" height="1361" alt="Screenshot 2026-04-07 210705" src="https://github.com/user-attachments/assets/c22e2bbf-f7bf-4a11-abfa-2d3730720ffa" /><div align="center">
 
 # 🤖 GenAI-TaskMaster
 
@@ -42,10 +42,14 @@
 <div align="center">
 <table>
 <tr>
-<td><img src="https://img.shields.io/badge/Dashboard-📊-blue?style=for-the-badge" /></td>
-<td><img src="https://img.shields.io/badge/Tasks-📋-green?style=for-the-badge" /></td>
-<td><img src="https://img.shields.io/badge/AI_Chat-🤖-purple?style=for-the-badge" /></td>
-<td><img src="https://img.shields.io/badge/Schedule-📅-orange?style=for-the-badge" /></td>
+<td><img src="<img width="2559" height="1361" alt="Screenshot 2026-04-07 210705" src="https://github.com/user-attachments/assets/a1568505-e423-4d71-97ba-b179c81ecdeb" />
+" /></td>
+<td><img src="<img width="2537" height="1359" alt="Screenshot 2026-04-07 210720" src="https://github.com/user-attachments/assets/ffee5070-9dd7-4e87-b0f4-6ff4e9b7258d" />
+" /></td>
+<td><img src="<img width="2534" height="1366" alt="Screenshot 2026-04-07 210730" src="https://github.com/user-attachments/assets/ecd2217a-4b2e-431f-80f3-166157d4fedb" />
+" /></td>
+<td><img src="<img width="2530" height="1363" alt="Screenshot 2026-04-07 210803" src="https://github.com/user-attachments/assets/7f1b2f65-92e7-456e-bec6-c4249c32320b" />
+" /></td>
 </tr>
 </table>
 </div>
