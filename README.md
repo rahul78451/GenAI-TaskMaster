@@ -42,13 +42,15 @@
 <div align="center">
 <table>
 <tr>
-<td><img src="<img width="2559" height="1361" alt="Screenshot 2026-04-07 210705" src="https://github.com/user-attachments/assets/a1568505-e423-4d71-97ba-b179c81ecdeb" />
+<td><img width="600" alt="Dashboard" src="<img width="2559" height="1361" alt="Screenshot 2026-04-07 210705" src="https://github.com/user-attachments/assets/ffbec646-f811-4101-a26c-941b6691ff6b" />
 " /></td>
-<td><img src="<img width="2537" height="1359" alt="Screenshot 2026-04-07 210720" src="https://github.com/user-attachments/assets/ffee5070-9dd7-4e87-b0f4-6ff4e9b7258d" />
+<td><img width="600" alt="Tasks" src="<img width="2537" height="1359" alt="Screenshot 2026-04-07 210720" src="https://github.com/user-attachments/assets/09f9bbb2-b42b-4731-9090-ebcd36b41cd5" />
 " /></td>
-<td><img src="<img width="2534" height="1366" alt="Screenshot 2026-04-07 210730" src="https://github.com/user-attachments/assets/ecd2217a-4b2e-431f-80f3-166157d4fedb" />
+</tr>
+<tr>
+<td><img width="600" alt="AI Assistant" src="<img width="2534" height="1366" alt="Screenshot 2026-04-07 210730" src="https://github.com/user-attachments/assets/89547617-48f4-446e-be59-557c00a85f1a" />
 " /></td>
-<td><img src="<img width="2530" height="1363" alt="Screenshot 2026-04-07 210803" src="https://github.com/user-attachments/assets/7f1b2f65-92e7-456e-bec6-c4249c32320b" />
+<td><img width="600" alt="Schedule" src="<img width="2530" height="1363" alt="Screenshot 2026-04-07 210803" src="https://github.com/user-attachments/assets/f5b1505c-1e6c-47e9-8746-4c782e2bf304" />
 " /></td>
 </tr>
 </table>
