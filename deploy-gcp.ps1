@@ -1,7 +1,7 @@
 # Google Cloud Deployment Script for GenAI Task Manager (Windows PowerShell)
 
 # Configuration
-$PROJECT_ID = "genai-task-manager"
+$PROJECT_ID = "thermal-rain-459618-t5"
 $REGION = "us-central1"
 $BACKEND_IMAGE = "gcr.io/$PROJECT_ID/genai-backend"
 $FRONTEND_BUCKET = "gs://$PROJECT_ID-frontend"
@@ -56,7 +56,6 @@ function Setup-GCPProject {
         container.googleapis.com `
         containerregistry.googleapis.com `
         storage-api.googleapis.com `
-        cloudsql.googleapis.com `
         cloudresourcemanager.googleapis.com
     
     Write-Success "GCP project configured"
@@ -77,13 +76,33 @@ function Authenticate-GCP {
 function Create-StorageBucket {
     Write-Info "Creating Cloud Storage bucket for frontend..."
     
-    try {
-        gsutil ls -b $FRONTEND_BUCKET | Out-Null
-        Write-Warning "Bucket $FRONTEND_BUCKET already exists"
+    # Extract bucket name without gs:// prefix
+    $bucketName = $FRONTEND_BUCKET -replace "gs://", ""
+    
+    # Check if bucket exists
+    $bucketExists = gsutil ls -b "gs://$bucketName" 2>&1 | Select-String "does not exist" -ErrorAction SilentlyContinue
+    
+    if ($bucketExists) {
+        # Bucket doesn't exist, create it
+        Write-Info "Bucket does not exist, creating..."
+        gsutil mb "gs://$bucketName"
+        
+        if ($LASTEXITCODE -eq 0) {
+            Write-Success "Cloud Storage bucket created: gs://$bucketName"
+        }
+        else {
+            Write-Error "Failed to create bucket gs://$bucketName"
+            exit 1
+        }
     }
-    catch {
-        gsutil mb $FRONTEND_BUCKET
-        Write-Success "Cloud Storage bucket created"
+    else {
+        Write-Warning "Bucket gs://$bucketName already exists or bucket check failed"
+        # Try to create anyway in case check failed
+        gsutil mb "gs://$bucketName" 2>&1 | ForEach-Object {
+            if ($_ -notmatch "already exists") {
+                Write-Warning $_
+            }
+        }
     }
 }
 
@@ -118,7 +137,7 @@ function Deploy-Backend {
         --memory 1Gi `
         --cpu 2 `
         --timeout 120 `
-        --max-instances 100 `
+        --max-instances 10 `
         --quiet
     
     $BACKEND_URL = gcloud run services describe genai-backend --region $REGION --format='value(status.url)'
@@ -132,7 +151,12 @@ function Deploy-Backend {
 function Deploy-Frontend {
     Write-Info "Uploading frontend to Cloud Storage..."
     
-    gsutil -m cp -r "frontend/*" $FRONTEND_BUCKET
+    gsutil -m cp -r "frontend/*" $FRONTEND_BUCKET 2>&1
+    
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to upload frontend files to $FRONTEND_BUCKET"
+        exit 1
+    }
     
     Write-Success "Frontend uploaded to Cloud Storage"
 }
@@ -141,11 +165,16 @@ function Deploy-Frontend {
 function Configure-Bucket {
     Write-Info "Configuring bucket for website serving..."
     
-    gsutil web set -m index.html -e 404.html $FRONTEND_BUCKET
+    gsutil web set -m index.html -e 404.html $FRONTEND_BUCKET 2>&1
+    
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to configure bucket for website serving"
+        exit 1
+    }
     
     # Make files publicly readable
-    gsutil -m acl ch -u AllUsers:R "$FRONTEND_BUCKET/index.html"
-    gsutil -m acl ch -u AllUsers:R "$FRONTEND_BUCKET/app.js"
+    gsutil -m acl ch -u AllUsers:R "$FRONTEND_BUCKET/index.html" 2>&1
+    gsutil -m acl ch -u AllUsers:R "$FRONTEND_BUCKET/app.js" 2>&1
     
     $FRONTEND_URL = "https://storage.googleapis.com/$PROJECT_ID-frontend/index.html"
     Write-Success "Bucket configured for website serving"
@@ -168,13 +197,18 @@ function Update-FrontendConfig {
     $content = Get-Content $appJsPath -Raw
     
     # Replace localhost with Cloud Run URL
-    $content = $content -replace "http://localhost:8001", $BackendURL
+    $content = $content -replace "http://localhost:8080", $BackendURL
     
     # Write back
     Set-Content $appJsPath $content
     
     # Upload updated file
-    gsutil cp $appJsPath "$FRONTEND_BUCKET/app.js"
+    gsutil cp $appJsPath "$FRONTEND_BUCKET/app.js" 2>&1
+    
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to upload updated app.js to Cloud Storage"
+        exit 1
+    }
     
     Write-Success "Frontend configuration updated with backend URL"
 }

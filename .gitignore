@@ -76,15 +76,17 @@ tempCodeRunnerFile.js
 frontend/tempCodeRunnerFile.js
 
 # ===========================
-# BACKUP FILES (don't push to GitHub)
+# BACKUP & DEPLOY COPIES (don't push to GitHub)
 # ===========================
 frontend/app_backup_*.js
 frontend/app_backup_old.js
 frontend/app_backup_simple.js
+frontend/app_v11.js
 frontend/debug.html
 frontend/diagnostic.html
 frontend/test-simple.html
 frontend/test.html
+frontend/tempCodeRunnerFile.js
 
 # ===========================
 # DOCKER

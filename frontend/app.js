@@ -1,4 +1,4 @@
-const { useState, useEffect } = React;
+const { useState, useEffect, useRef, useMemo } = React;
 
 // DASHBOARD COMPONENT
 function Dashboard({ refreshTrigger, onTabChange }) {
@@ -36,7 +36,7 @@ function Dashboard({ refreshTrigger, onTabChange }) {
         let noteCount = 0;
         
         Promise.all([
-            fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/tasks')
+            fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks')
                 .then(res => res.json())
                 .then(data => {
                     const tasks = Array.isArray(data) ? data : [];
@@ -63,14 +63,14 @@ function Dashboard({ refreshTrigger, onTabChange }) {
                 })
                 .catch(err => console.error('Error loading tasks:', err)),
             
-            fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/schedule')
+            fetch('https://genai-backend-1013063132017.us-central1.run.app/api/schedule')
                 .then(res => res.json())
                 .then(data => {
                     eventCount = Array.isArray(data) ? data.length : 0;
                 })
                 .catch(err => console.error('Error loading schedule:', err)),
             
-            fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/notes')
+            fetch('https://genai-backend-1013063132017.us-central1.run.app/api/notes')
                 .then(res => res.json())
                 .then(data => {
                     noteCount = Array.isArray(data) ? data.length : 0;
@@ -128,7 +128,7 @@ function Dashboard({ refreshTrigger, onTabChange }) {
         const results = [];
 
         // Search Tasks
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/tasks')
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks')
             .then(res => res.json())
             .then(tasks => {
                 const matchedTasks = (tasks || []).filter(task => 
@@ -166,7 +166,7 @@ function Dashboard({ refreshTrigger, onTabChange }) {
     };
 
     const createTestTask = () => {
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/tasks', {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -190,7 +190,7 @@ function Dashboard({ refreshTrigger, onTabChange }) {
             return;
         }
 
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/tasks', {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -217,9 +217,9 @@ function Dashboard({ refreshTrigger, onTabChange }) {
             React.createElement('h2', null, '📊 Dashboard'),
             React.createElement('p', null, '⏳ Loading dashboard...'),
             React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' } },
-                React.createElement('div', { style: { padding: '20px', backgroundColor: '#f5f5f5', borderRadius: '8px', textAlign: 'center' } }, React.createElement('p', null, '📋 Total Tasks: 0')),
-                React.createElement('div', { style: { padding: '20px', backgroundColor: '#f5f5f5', borderRadius: '8px', textAlign: 'center' } }, React.createElement('p', null, '⏳ Pending: 0')),
-                React.createElement('div', { style: { padding: '20px', backgroundColor: '#f5f5f5', borderRadius: '8px', textAlign: 'center' } }, React.createElement('p', null, '✓ Completed: 0'))
+                React.createElement('div', { style: { padding: '20px', backgroundColor: 'rgba(20, 20, 32, 0.5)', borderRadius: '8px', textAlign: 'center' } }, React.createElement('p', null, '📋 Total Tasks: 0')),
+                React.createElement('div', { style: { padding: '20px', backgroundColor: 'rgba(20, 20, 32, 0.5)', borderRadius: '8px', textAlign: 'center' } }, React.createElement('p', null, '⏳ Pending: 0')),
+                React.createElement('div', { style: { padding: '20px', backgroundColor: 'rgba(20, 20, 32, 0.5)', borderRadius: '8px', textAlign: 'center' } }, React.createElement('p', null, '✓ Completed: 0'))
             )
         );
     }
@@ -229,13 +229,14 @@ function Dashboard({ refreshTrigger, onTabChange }) {
         transition: 'all 0.3s ease',
         position: 'relative',
         padding: '24px',
-        backgroundColor: 'white',
-        borderRadius: '12px',
-        border: '1px solid #e5e7eb',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
+        backgroundColor: 'var(--bg-card)',
+        borderRadius: '16px',
+        border: '1px solid var(--border-subtle)',
+        boxShadow: 'var(--shadow-sm)',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        backdropFilter: 'blur(12px)'
     };
 
     const makeStatCard = (title, value, icon, color, onClick) => {
@@ -244,33 +245,35 @@ function Dashboard({ refreshTrigger, onTabChange }) {
             onClick: onClick,
             onMouseEnter: (e) => {
                 e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)';
+                e.currentTarget.style.boxShadow = '0 10px 32px rgba(0,0,0,0.5), 0 0 30px rgba(99, 102, 241, 0.15)';
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
             },
             onMouseLeave: (e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.08)';
+                e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.3)';
+                e.currentTarget.style.borderColor = 'var(--border-subtle)';
             },
             style: { ...statCardStyle, borderLeft: `4px solid ${color}` }
         },
             React.createElement('div', null,
                 React.createElement('span', { style: { fontSize: '28px', display: 'block', marginBottom: '8px' } }, icon),
-                React.createElement('h3', { style: { margin: '0 0 8px 0', color: '#333', fontSize: '13px', fontWeight: '600', letterSpacing: '0.5px' } }, title)
+                React.createElement('h3', { style: { margin: '0 0 8px 0', color: 'var(--text-secondary)', fontSize: '11px', fontWeight: '600', letterSpacing: '1.5px', textTransform: 'uppercase' } }, title)
             ),
-            React.createElement('p', { style: { margin: '0 0 8px 0', fontSize: '32px', fontWeight: '700', color: color } }, value || 0),
-            React.createElement('p', { style: { margin: '0', fontSize: '11px', color: '#9ca3af', fontWeight: '500' } }, '▲ View details →')
+            React.createElement('p', { style: { margin: '0 0 8px 0', fontSize: '36px', fontWeight: '800', color: color, letterSpacing: '-1px' } }, value || 0),
+            React.createElement('p', { style: { margin: '0', fontSize: '11px', color: 'var(--text-tertiary)', fontWeight: '500' } }, '▲ View details →')
         );
     };
 
     return React.createElement('div', { className: 'container' },
-        React.createElement('div', { style: { marginBottom: '30px', padding: '16px', backgroundColor: '#fafbfc', borderRadius: '10px', border: '1px solid #e5e7eb' } },
-            React.createElement('label', { style: { display: 'block', marginBottom: '12px', fontWeight: '600', color: '#1f2937', fontSize: '13px', letterSpacing: '0.5px' } }, '🔍 SEARCH EVERYTHING'),
+        React.createElement('div', { style: { marginBottom: '30px', padding: '16px', backgroundColor: 'var(--bg-glass)', borderRadius: '12px', border: '1px solid var(--border-subtle)' } },
+            React.createElement('label', { style: { display: 'block', marginBottom: '12px', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '11px', letterSpacing: '1.5px', textTransform: 'uppercase' } }, '🔍 SEARCH EVERYTHING'),
             React.createElement('div', { style: { display: 'flex', gap: '10px', alignItems: 'center' } },
                 React.createElement('input', {
                     type: 'text',
                     value: searchQuery,
                     onChange: handleSearchChange,
                     placeholder: 'Search tasks, schedule, notes, workflows...',
-                    style: { flex: 1, padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit', backgroundColor: 'white' }
+                    style: { flex: 1, padding: '10px 14px', border: '1px solid var(--border-default)', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }
                 }),
                 searchQuery && React.createElement('button', {
                     onClick: clearSearch,
@@ -279,15 +282,15 @@ function Dashboard({ refreshTrigger, onTabChange }) {
             )
         ),
 
-        showSearchResults && React.createElement('div', { style: { marginBottom: '30px', padding: '20px', backgroundColor: '#eff6ff', borderRadius: '10px', border: '2px solid #0ea5e9' } },
-            React.createElement('h3', { style: { margin: '0 0 15px 0', color: '#0369a1', fontSize: '15px', fontWeight: '600' } }, '🔍 Search Results (' + searchResults.length + ' found)'),
-            searchResults.length === 0 ? React.createElement('p', { style: { margin: 0, color: '#666' } }, 'No results found for "' + searchQuery + '"') : null,
-            searchResults.map((result, idx) => React.createElement('div', { key: idx, style: { backgroundColor: 'white', padding: '14px', marginBottom: '10px', borderRadius: '8px', border: '1px solid #bfdbfe' } },
+        showSearchResults && React.createElement('div', { style: { marginBottom: '30px', padding: '20px', backgroundColor: 'rgba(56, 189, 248, 0.06)', borderRadius: '10px', border: '2px solid rgba(56, 189, 248, 0.3)' } },
+            React.createElement('h3', { style: { margin: '0 0 15px 0', color: '#38bdf8', fontSize: '15px', fontWeight: '600' } }, '🔍 Search Results (' + searchResults.length + ' found)'),
+            searchResults.length === 0 ? React.createElement('p', { style: { margin: 0, color: '#a0a0b8' } }, 'No results found for "' + searchQuery + '"') : null,
+            searchResults.map((result, idx) => React.createElement('div', { key: idx, style: { backgroundColor: 'rgba(20, 20, 32, 0.75)', padding: '14px', marginBottom: '10px', borderRadius: '8px', border: '1px solid rgba(56, 189, 248, 0.2)' } },
                 React.createElement('div', { style: { display: 'flex', gap: '12px', alignItems: 'start' } },
                     React.createElement('span', { style: { fontSize: '20px', flexShrink: 0 } }, result.icon),
                     React.createElement('div', { style: { flex: 1 } },
-                        React.createElement('h4', { style: { margin: '0 0 5px 0', color: '#1f2937', fontSize: '14px', fontWeight: '600' } }, result.type + ': ' + result.title),
-                        result.description && React.createElement('p', { style: { margin: '0 0 8px 0', color: '#666', fontSize: '13px' } }, result.description),
+                        React.createElement('h4', { style: { margin: '0 0 5px 0', color: '#f0f0f5', fontSize: '14px', fontWeight: '600' } }, result.type + ': ' + result.title),
+                        result.description && React.createElement('p', { style: { margin: '0 0 8px 0', color: '#a0a0b8', fontSize: '13px' } }, result.description),
                         React.createElement('div', { style: { display: 'flex', gap: '8px', fontSize: '11px' } },
                             result.status && React.createElement('span', { style: { backgroundColor: result.status === 'completed' ? '#d1fae5' : '#fef3c7', color: result.status === 'completed' ? '#065f46' : '#92400e', padding: '3px 8px', borderRadius: '4px', fontWeight: '600' } }, result.status),
                             result.priority && React.createElement('span', { style: { backgroundColor: result.priority === 'high' ? '#fee2e2' : result.priority === 'medium' ? '#fef3c7' : '#dcfce7', color: result.priority === 'high' ? '#7f1d1d' : result.priority === 'medium' ? '#92400e' : '#166534', padding: '3px 8px', borderRadius: '4px', fontWeight: '600' } }, result.priority)
@@ -299,8 +302,8 @@ function Dashboard({ refreshTrigger, onTabChange }) {
 
         React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' } },
             React.createElement('div', null,
-                React.createElement('h2', { style: { margin: '0 0 8px 0', color: '#1f2937', fontSize: '24px', fontWeight: '700' } }, '📊 Dashboard'),
-                React.createElement('p', { style: { margin: '0', color: '#9ca3af', fontSize: '13px' } }, 'Overview of your productivity')
+                React.createElement('h2', { style: { margin: '0 0 8px 0', color: 'var(--text-primary)', fontSize: '24px', fontWeight: '700' } }, '📊 Dashboard'),
+                React.createElement('p', { style: { margin: '0', color: 'var(--text-tertiary)', fontSize: '13px' } }, 'Overview of your productivity')
             ),
             React.createElement('button', {
                 onClick: () => setShowCreateForm(true),
@@ -330,29 +333,29 @@ function Dashboard({ refreshTrigger, onTabChange }) {
         // TODAY'S FOCUS SECTION
         React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px' } },
             // Today's Focus (Left)
-            React.createElement('div', { style: { backgroundColor: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' } },
-                React.createElement('h3', { style: { margin: '0 0 15px 0', color: '#1f2937', fontSize: '15px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' } }, '🎯 TODAY\'s FOCUS'),
+            React.createElement('div', { className: 'dashboard-card', style: { backgroundColor: 'var(--bg-card)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)', backdropFilter: 'blur(12px)' } },
+                React.createElement('h3', { style: { margin: '0 0 15px 0', color: 'var(--text-primary)', fontSize: '15px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' } }, '🎯 TODAY\'s FOCUS'),
                 topTasks.length === 0 ? 
-                    React.createElement('p', { style: { margin: '0', color: '#9ca3af', fontSize: '13px' } }, 'No pending tasks for today. Great job!') :
+                    React.createElement('p', { style: { margin: '0', color: 'var(--text-tertiary)', fontSize: '13px' } }, 'No pending tasks for today. Great job!') :
                     React.createElement('div', null,
-                        topTasks.map((task, idx) => React.createElement('div', { key: task.id, className: 'focus-item', style: { padding: '12px', background: 'linear-gradient(135deg, #667eea0a 0%, #764ba20a 100%)', borderLeft: '4px solid #667eea', borderRadius: '6px', marginBottom: '10px', display: 'flex', gap: '12px', alignItems: 'center' } },
+                        topTasks.map((task, idx) => React.createElement('div', { key: task.id, className: 'focus-item', style: { padding: '12px', background: 'var(--bg-glass)', borderLeft: '4px solid #667eea', borderRadius: '6px', marginBottom: '10px', display: 'flex', gap: '12px', alignItems: 'center' } },
                             React.createElement('span', { className: 'focus-number', style: { fontWeight: '700', fontSize: '18px', color: '#667eea', lineHeight: '1', minWidth: '24px' } }, idx + 1),
                             React.createElement('div', { style: { flex: 1 } },
-                                React.createElement('p', { style: { margin: '0 0 4px 0', color: '#1f2937', fontSize: '13px', fontWeight: '600' } }, task.title),
-                                React.createElement('p', { style: { margin: '0', color: '#9ca3af', fontSize: '11px' } }, task.priority + ' priority')
+                                React.createElement('p', { style: { margin: '0 0 4px 0', color: 'var(--text-primary)', fontSize: '13px', fontWeight: '600' } }, task.title),
+                                React.createElement('p', { style: { margin: '0', color: 'var(--text-tertiary)', fontSize: '11px' } }, task.priority + ' priority')
                             )
                         ))
                     )
             ),
             
             // Pomodoro Timer (Right)
-            React.createElement('div', { style: { backgroundColor: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' } },
-                React.createElement('h3', { style: { margin: '0 0 15px 0', color: '#1f2937', fontSize: '15px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' } }, '⏱️ FOCUS TIMER'),
+            React.createElement('div', { className: 'dashboard-card', style: { backgroundColor: 'var(--bg-card)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border-subtle)', boxShadow: 'var(--shadow-sm)', backdropFilter: 'blur(12px)' } },
+                React.createElement('h3', { style: { margin: '0 0 15px 0', color: 'var(--text-primary)', fontSize: '15px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' } }, '⏱️ FOCUS TIMER'),
                 React.createElement('div', { style: { textAlign: 'center' } },
                     React.createElement('div', { className: 'timer-display', style: { fontFamily: '\'Courier New\', monospace', fontSize: '48px', fontWeight: '700', textAlign: 'center', color: focusMode === 'pomodoro' ? '#ef4444' : '#10b981', margin: '20px 0', letterSpacing: '2px' } }, 
                         String(timerMinutes).padStart(2, '0') + ':' + String(timerSeconds).padStart(2, '0')
                     ),
-                    React.createElement('p', { style: { margin: '0 0 15px 0', color: '#6b7280', fontSize: '12px', fontWeight: '600' } }, focusMode === 'pomodoro' ? 'Focus Time' : 'Break Time'),
+                    React.createElement('p', { style: { margin: '0 0 15px 0', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: '600' } }, focusMode === 'pomodoro' ? 'Focus Time' : 'Break Time'),
                     React.createElement('div', { style: { display: 'flex', gap: '10px', justifyContent: 'center' } },
                         React.createElement('button', {
                             onClick: () => setTimerActive(!timerActive),
@@ -368,63 +371,63 @@ function Dashboard({ refreshTrigger, onTabChange }) {
         ),
         
         // Productivity Score
-        React.createElement('div', { style: { backgroundColor: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #e5e7eb', marginBottom: '30px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' } },
-            React.createElement('h3', { style: { margin: '0 0 15px 0', color: '#1f2937', fontSize: '15px', fontWeight: '700' } }, '⭐ TODAY\'S PRODUCTIVITY'),
+        React.createElement('div', { className: 'dashboard-card', style: { backgroundColor: 'var(--bg-card)', padding: '24px', borderRadius: '16px', border: '1px solid var(--border-subtle)', marginBottom: '30px', boxShadow: 'var(--shadow-sm)', backdropFilter: 'blur(12px)' } },
+            React.createElement('h3', { style: { margin: '0 0 15px 0', color: 'var(--text-primary)', fontSize: '15px', fontWeight: '700' } }, '⭐ TODAY\'S PRODUCTIVITY'),
             React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '20px' } },
                 React.createElement('div', { style: { textAlign: 'center' } },
-                    React.createElement('div', { style: { width: '80px', height: '80px', borderRadius: '50%', background: `conic-gradient(#10b981 0deg ${(dailyScore / 100) * 360}deg, #e5e7eb ${(dailyScore / 100) * 360}deg)`, display: 'flex', alignItems: 'center', justifyContent: 'center' } },
-                        React.createElement('div', { style: { width: '70px', height: '70px', borderRadius: '50%', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' } },
+                    React.createElement('div', { style: { width: '80px', height: '80px', borderRadius: '50%', background: `conic-gradient(#10b981 0deg ${(dailyScore / 100) * 360}deg, var(--border-subtle) ${(dailyScore / 100) * 360}deg)`, display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+                        React.createElement('div', { style: { width: '70px', height: '70px', borderRadius: '50%', backgroundColor: 'var(--bg-card)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' } },
                             React.createElement('div', { style: { fontSize: '24px', fontWeight: '700', color: '#10b981' } }, Math.round(dailyScore) + '%'),
-                            React.createElement('div', { style: { fontSize: '10px', color: '#6b7280', marginTop: '4px' } }, 'Complete')
+                            React.createElement('div', { style: { fontSize: '10px', color: 'var(--text-secondary)', marginTop: '4px' } }, 'Complete')
                         )
                     )
                 ),
                 React.createElement('div', { style: { flex: 1 } },
                     React.createElement('div', { style: { marginBottom: '12px' } },
-                        React.createElement('p', { style: { margin: '0 0 4px 0', fontSize: '13px', fontWeight: '600', color: '#1f2937' } }, 'Tasks Completed: ' + stats.completed_tasks + '/' + stats.total_tasks),
-                        React.createElement('div', { style: { width: '100%', height: '6px', backgroundColor: '#e5e7eb', borderRadius: '3px', overflow: 'hidden' } },
+                        React.createElement('p', { style: { margin: '0 0 4px 0', fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' } }, 'Tasks Completed: ' + stats.completed_tasks + '/' + stats.total_tasks),
+                        React.createElement('div', { style: { width: '100%', height: '6px', backgroundColor: 'var(--border-subtle)', borderRadius: '3px', overflow: 'hidden' } },
                             React.createElement('div', { style: { width: (stats.total_tasks > 0 ? (stats.completed_tasks / stats.total_tasks * 100) : 0) + '%', height: '100%', backgroundColor: '#10b981', transition: 'width 0.3s ease' } })
                         )
                     ),
-                    React.createElement('p', { style: { margin: '0', fontSize: '12px', color: '#9ca3af' } }, '🔥 ' + streak + ' day streak - Keep it up!')
+                    React.createElement('p', { style: { margin: '0', fontSize: '12px', color: 'var(--text-tertiary)' } }, '🔥 ' + streak + ' day streak - Keep it up!')
                 )
             )
         ),
 
         React.createElement('div', { style: {
             marginTop: '40px',
-            padding: '20px',
-            backgroundColor: '#f0f4ff',
-            borderRadius: '8px',
-            border: '1px solid #e5e7eb'
+            padding: '24px',
+            backgroundColor: 'var(--bg-glass)',
+            borderRadius: '16px',
+            border: '1px solid var(--border-subtle)'
         }},
-            React.createElement('h3', { style: { margin: '0 0 20px 0', color: '#1f2937', fontSize: '15px', fontWeight: '700', letterSpacing: '0.5px' } }, '🎓 GETTING STARTED'),
+            React.createElement('h3', { style: { margin: '0 0 20px 0', color: 'var(--text-primary)', fontSize: '15px', fontWeight: '700', letterSpacing: '0.5px' } }, '🎓 GETTING STARTED'),
             React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '13px' } },
-                React.createElement('div', { style: { padding: '12px', backgroundColor: '#f9fafb', borderRadius: '8px', border: '1px solid #f3f4f6' } },
+                React.createElement('div', { style: { padding: '12px', backgroundColor: 'var(--bg-card)', borderRadius: '8px', border: '1px solid var(--border-subtle)' } },
                     React.createElement('span', { style: { fontSize: '18px', display: 'block', marginBottom: '6px' } }, '📝'),
-                    React.createElement('strong', { style: { color: '#1f2937' } }, 'Create Tasks'),
-                    React.createElement('p', { style: { margin: '6px 0 0 0', color: '#666' } }, 'Add tasks with title, description, and priority levels.')
+                    React.createElement('strong', { style: { color: 'var(--text-primary)' } }, 'Create Tasks'),
+                    React.createElement('p', { style: { margin: '6px 0 0 0', color: 'var(--text-secondary)' } }, 'Add tasks with title, description, and priority levels.')
                 ),
-                React.createElement('div', { style: { padding: '12px', backgroundColor: '#f9fafb', borderRadius: '8px', border: '1px solid #f3f4f6' } },
+                React.createElement('div', { style: { padding: '12px', backgroundColor: 'var(--bg-card)', borderRadius: '8px', border: '1px solid var(--border-subtle)' } },
                     React.createElement('span', { style: { fontSize: '18px', display: 'block', marginBottom: '6px' } }, '📅'),
-                    React.createElement('strong', { style: { color: '#1f2937' } }, 'Schedule Events'),
-                    React.createElement('p', { style: { margin: '6px 0 0 0', color: '#666' } }, 'Plan your calendar and manage all your events.')
+                    React.createElement('strong', { style: { color: 'var(--text-primary)' } }, 'Schedule Events'),
+                    React.createElement('p', { style: { margin: '6px 0 0 0', color: 'var(--text-secondary)' } }, 'Plan your calendar and manage all your events.')
                 ),
-                React.createElement('div', { style: { padding: '12px', backgroundColor: '#f9fafb', borderRadius: '8px', border: '1px solid #f3f4f6' } },
+                React.createElement('div', { style: { padding: '12px', backgroundColor: 'var(--bg-card)', borderRadius: '8px', border: '1px solid var(--border-subtle)' } },
                     React.createElement('span', { style: { fontSize: '18px', display: 'block', marginBottom: '6px' } }, '📝'),
-                    React.createElement('strong', { style: { color: '#1f2937' } }, 'Take Notes'),
-                    React.createElement('p', { style: { margin: '6px 0 0 0', color: '#666' } }, 'Capture ideas and important information.')
+                    React.createElement('strong', { style: { color: 'var(--text-primary)' } }, 'Take Notes'),
+                    React.createElement('p', { style: { margin: '6px 0 0 0', color: 'var(--text-secondary)' } }, 'Capture ideas and important information.')
                 ),
-                React.createElement('div', { style: { padding: '12px', backgroundColor: '#f9fafb', borderRadius: '8px', border: '1px solid #f3f4f6' } },
+                React.createElement('div', { style: { padding: '12px', backgroundColor: 'var(--bg-card)', borderRadius: '8px', border: '1px solid var(--border-subtle)' } },
                     React.createElement('span', { style: { fontSize: '18px', display: 'block', marginBottom: '6px' } }, '🤖'),
-                    React.createElement('strong', { style: { color: '#1f2937' } }, 'Use AI Workflows'),
-                    React.createElement('p', { style: { margin: '6px 0 0 0', color: '#666' } }, 'Automate complex tasks with AI.')
+                    React.createElement('strong', { style: { color: 'var(--text-primary)' } }, 'Use AI Workflows'),
+                    React.createElement('p', { style: { margin: '6px 0 0 0', color: 'var(--text-secondary)' } }, 'Automate complex tasks with AI.')
                 )
             )
         ),
 
         showCreateForm && React.createElement('div', { style: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 } },
-            React.createElement('div', { style: { backgroundColor: '#ffffff', borderRadius: '16px', padding: '30px', maxWidth: '500px', width: '90%', boxShadow: '0 25px 50px rgba(0,0,0,0.2)' } },
+            React.createElement('div', { style: { backgroundColor: 'rgba(20, 20, 32, 0.75)', borderRadius: '16px', padding: '30px', maxWidth: '500px', width: '90%', boxShadow: '0 25px 50px rgba(0,0,0,0.5), 0 0 30px rgba(99,102,241,0.1)' } },
                 React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' } },
                     React.createElement('h2', { style: { margin: 0 } }, '✨ Create New Task'),
                     React.createElement('button', {
@@ -437,32 +440,32 @@ function Dashboard({ refreshTrigger, onTabChange }) {
                 ),
 
                 React.createElement('div', { style: { marginBottom: '20px' } },
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#333' } }, 'Task Title *'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#f0f0f5' } }, 'Task Title *'),
                     React.createElement('input', {
                         type: 'text',
                         value: formData.title,
                         onChange: (e) => setFormData({ ...formData, title: e.target.value }),
                         placeholder: 'What needs to be done?',
-                        style: { width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
+                        style: { width: '100%', padding: '10px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
                     })
                 ),
 
                 React.createElement('div', { style: { marginBottom: '20px' } },
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#333' } }, 'Description'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#f0f0f5' } }, 'Description'),
                     React.createElement('textarea', {
                         value: formData.description,
                         onChange: (e) => setFormData({ ...formData, description: e.target.value }),
                         placeholder: 'Add task details (optional)',
-                        style: { width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', minHeight: '80px', fontFamily: 'inherit', resize: 'vertical' }
+                        style: { width: '100%', padding: '10px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', minHeight: '80px', fontFamily: 'inherit', resize: 'vertical' }
                     })
                 ),
 
                 React.createElement('div', { style: { marginBottom: '20px' } },
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#333' } }, 'Priority'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#f0f0f5' } }, 'Priority'),
                     React.createElement('select', {
                         value: formData.priority,
                         onChange: (e) => setFormData({ ...formData, priority: e.target.value }),
-                        style: { width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
+                        style: { width: '100%', padding: '10px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
                     },
                         React.createElement('option', { value: 'low' }, '🟢 Low'),
                         React.createElement('option', { value: 'medium' }, '🟡 Medium'),
@@ -471,31 +474,31 @@ function Dashboard({ refreshTrigger, onTabChange }) {
                 ),
 
                 React.createElement('div', { style: { marginBottom: '20px' } },
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#333', fontSize: '13px' } }, '💡 Quick Suggestions:'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#f0f0f5', fontSize: '13px' } }, '💡 Quick Suggestions:'),
                     React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' } },
                         React.createElement('button', {
                             onClick: () => setFormData({ ...formData, title: '🏃 Morning Exercise', description: 'Do 30 mins of cardio or stretching', priority: 'high' }),
-                            style: { padding: '8px 12px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: '500', transition: 'all 0.2s' }
+                            style: { padding: '8px 12px', backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: '500', transition: 'all 0.2s' }
                         }, '🏃 Morning Exercise'),
                         React.createElement('button', {
                             onClick: () => setFormData({ ...formData, title: '📧 Check Emails', description: 'Review and respond to important emails', priority: 'high' }),
-                            style: { padding: '8px 12px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: '500', transition: 'all 0.2s' }
+                            style: { padding: '8px 12px', backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: '500', transition: 'all 0.2s' }
                         }, '📧 Check Emails'),
                         React.createElement('button', {
                             onClick: () => setFormData({ ...formData, title: '🛒 Grocery Shopping', description: 'Buy weekly groceries and essentials', priority: 'medium' }),
-                            style: { padding: '8px 12px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: '500', transition: 'all 0.2s' }
+                            style: { padding: '8px 12px', backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: '500', transition: 'all 0.2s' }
                         }, '🛒 Shopping'),
                         React.createElement('button', {
                             onClick: () => setFormData({ ...formData, title: '👥 Team Meeting', description: 'Attend scheduled team standup', priority: 'high' }),
-                            style: { padding: '8px 12px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: '500', transition: 'all 0.2s' }
+                            style: { padding: '8px 12px', backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: '500', transition: 'all 0.2s' }
                         }, '👥 Team Meeting'),
                         React.createElement('button', {
                             onClick: () => setFormData({ ...formData, title: '💰 Budget Review', description: 'Review monthly budget and spending', priority: 'medium' }),
-                            style: { padding: '8px 12px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: '500', transition: 'all 0.2s' }
+                            style: { padding: '8px 12px', backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: '500', transition: 'all 0.2s' }
                         }, '💰 Budget'),
                         React.createElement('button', {
                             onClick: () => setFormData({ ...formData, title: '🧹 Clean Room', description: 'Organize and clean your workspace', priority: 'low' }),
-                            style: { padding: '8px 12px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: '500', transition: 'all 0.2s' }
+                            style: { padding: '8px 12px', backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: '500', transition: 'all 0.2s' }
                         }, '🧹 Clean')
                     )
                 ),
@@ -506,7 +509,7 @@ function Dashboard({ refreshTrigger, onTabChange }) {
                             setShowCreateForm(false);
                             setFormData({ title: '', description: '', priority: 'medium' });
                         },
-                        style: { flex: 1, padding: '10px 20px', backgroundColor: '#e5e7eb', color: '#333', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }
+                        style: { flex: 1, padding: '10px 20px', backgroundColor: 'rgba(255,255,255,0.06)', color: '#f0f0f5', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }
                     }, 'Cancel'),
                     React.createElement('button', {
                         onClick: handleCreateTask,
@@ -576,7 +579,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
     const categories = ['All', 'Health', 'Work', 'Personal', 'Shopping', 'Finance'];
 
     const loadTasks = () => {
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/tasks')
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks')
             .then(res => res.json())
             .then(data => {
                 setTasks(data || []);
@@ -620,7 +623,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
             alert('Please enter a task title');
             return;
         }
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/tasks', {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -640,7 +643,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
     };
 
     const addQuickTask = (template) => {
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/tasks', {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -659,7 +662,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
     };
 
     const handleCompleteTask = (taskId) => {
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/tasks/' + taskId, {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks/' + taskId, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: 'completed' })
@@ -694,7 +697,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
             alert('Please enter a task title');
             return;
         }
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/tasks/' + editingId, {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks/' + editingId, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -716,7 +719,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
 
     const handleDeleteTask = (taskId) => {
         if (confirm('Delete this task?')) {
-            fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/tasks/' + taskId, { method: 'DELETE' })
+            fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks/' + taskId, { method: 'DELETE' })
             .then(() => {
                 loadTasks();
                 onRefresh();
@@ -760,10 +763,10 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
             marginBottom: '30px' 
         }},
             React.createElement('div', { style: {
-                backgroundColor: '#f5f5f5',
+                backgroundColor: 'rgba(20, 20, 32, 0.5)',
                 padding: '20px',
                 borderRadius: '8px',
-                border: '1px solid #ddd'
+                border: '1px solid rgba(255,255,255,0.1)'
             }},
                 React.createElement('h3', { style: { margin: '0 0 20px 0' } }, '⚡ Quick Templates'),
                 React.createElement('div', { style: { display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '15px' } },
@@ -772,8 +775,8 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                         onClick: () => setSelectedCategory(cat),
                         style: {
                             padding: '8px 12px',
-                            backgroundColor: selectedCategory === cat ? '#4f46e5' : '#e5e7eb',
-                            color: selectedCategory === cat ? 'white' : '#666',
+                            backgroundColor: selectedCategory === cat ? '#4f46e5' : 'rgba(255,255,255,0.06)',
+                            color: selectedCategory === cat ? 'white' : '#a0a0b8',
                             border: 'none',
                             borderRadius: '4px',
                             cursor: 'pointer',
@@ -788,8 +791,8 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                         onClick: () => addQuickTask(template),
                         style: {
                             padding: '10px',
-                            backgroundColor: 'white',
-                            border: '1px solid #ddd',
+                            backgroundColor: 'rgba(20, 20, 32, 0.75)',
+                            border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '4px',
                             cursor: 'pointer',
                             fontSize: '13px',
@@ -802,10 +805,10 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
             ),
 
             showForm && React.createElement('div', { style: {
-                backgroundColor: '#f5f5f5',
+                backgroundColor: 'rgba(20, 20, 32, 0.5)',
                 padding: '20px',
                 borderRadius: '8px',
-                border: '1px solid #ddd'
+                border: '1px solid rgba(255,255,255,0.1)'
             }},
                 React.createElement('h3', null, 'Create Custom Task'),
                 React.createElement('input', {
@@ -818,7 +821,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                         width: '100%',
                         padding: '10px',
                         marginBottom: '10px',
-                        border: '1px solid #ccc',
+                        border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '4px',
                         fontSize: '14px',
                         boxSizing: 'border-box'
@@ -833,7 +836,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                         width: '100%',
                         padding: '10px',
                         marginBottom: '10px',
-                        border: '1px solid #ccc',
+                        border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '4px',
                         fontSize: '14px',
                         minHeight: '60px',
@@ -849,7 +852,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                         width: '100%',
                         padding: '10px',
                         marginBottom: '10px',
-                        border: '1px solid #ccc',
+                        border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '4px',
                         fontSize: '14px',
                         boxSizing: 'border-box'
@@ -867,7 +870,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                         width: '100%',
                         padding: '10px',
                         marginBottom: '10px',
-                        border: '1px solid #ccc',
+                        border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '4px',
                         fontSize: '14px',
                         boxSizing: 'border-box'
@@ -901,8 +904,8 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                 onClick: () => setActiveFilter(null),
                 style: {
                     padding: '8px 16px',
-                    backgroundColor: activeFilter === null ? '#4f46e5' : '#e5e7eb',
-                    color: activeFilter === null ? 'white' : '#666',
+                    backgroundColor: activeFilter === null ? '#4f46e5' : 'rgba(255,255,255,0.06)',
+                    color: activeFilter === null ? 'white' : '#a0a0b8',
                     border: 'none',
                     borderRadius: '6px',
                     cursor: 'pointer',
@@ -914,8 +917,8 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                 onClick: () => setActiveFilter('pending'),
                 style: {
                     padding: '8px 16px',
-                    backgroundColor: activeFilter === 'pending' ? '#f59e0b' : '#e5e7eb',
-                    color: activeFilter === 'pending' ? 'white' : '#666',
+                    backgroundColor: activeFilter === 'pending' ? '#f59e0b' : 'rgba(255,255,255,0.06)',
+                    color: activeFilter === 'pending' ? 'white' : '#a0a0b8',
                     border: 'none',
                     borderRadius: '6px',
                     cursor: 'pointer',
@@ -927,8 +930,8 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                 onClick: () => setActiveFilter('completed'),
                 style: {
                     padding: '8px 16px',
-                    backgroundColor: activeFilter === 'completed' ? '#10b981' : '#e5e7eb',
-                    color: activeFilter === 'completed' ? 'white' : '#666',
+                    backgroundColor: activeFilter === 'completed' ? '#10b981' : 'rgba(255,255,255,0.06)',
+                    color: activeFilter === 'completed' ? 'white' : '#a0a0b8',
                     border: 'none',
                     borderRadius: '6px',
                     cursor: 'pointer',
@@ -938,7 +941,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
             }, '✓ Completed')
         ),
 
-        filteredTasks.length === 0 && React.createElement('div', { style: { textAlign: 'center', padding: '40px', color: '#999' } },
+        filteredTasks.length === 0 && React.createElement('div', { style: { textAlign: 'center', padding: '40px', color: '#6b6b80' } },
             React.createElement('p', { style: { fontSize: '18px', marginBottom: '10px' } }, '📝 No tasks yet'),
             React.createElement('p', null, 'Use quick templates or create a custom task to get started!')
         ),
@@ -965,17 +968,17 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
             }
         }},
             React.createElement('div', { style: {
-                backgroundColor: 'white',
+                backgroundColor: 'rgba(20, 20, 32, 0.75)',
                 padding: '30px',
                 borderRadius: '12px',
-                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.1)',
                 maxWidth: '500px',
                 width: '90%',
                 maxHeight: '80vh',
                 overflowY: 'auto'
             }},
                 React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' } },
-                    React.createElement('h2', { style: { margin: '0', color: '#1f2937', fontSize: '20px', fontWeight: '700' } }, '✏️ Edit Task'),
+                    React.createElement('h2', { style: { margin: '0', color: '#f0f0f5', fontSize: '20px', fontWeight: '700' } }, '✏️ Edit Task'),
                     React.createElement('button', {
                         onClick: () => {
                             setEditingId(null);
@@ -990,12 +993,12 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                             fontSize: '24px',
                             cursor: 'pointer',
                             padding: '0',
-                            color: '#999'
+                            color: '#6b6b80'
                         }
                     }, '✕')
                 ),
                 React.createElement('div', null,
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Task Title *'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Task Title *'),
                     React.createElement('input', {
                         type: 'text',
                         placeholder: 'Task title',
@@ -1006,14 +1009,14 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                             width: '100%',
                             padding: '10px',
                             marginBottom: '15px',
-                            border: '1px solid #d1d5db',
+                            border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '6px',
                             fontSize: '14px',
                             boxSizing: 'border-box',
                             fontFamily: 'inherit'
                         }
                     }),
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Description'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Description'),
                     React.createElement('textarea', {
                         placeholder: 'Description (optional)',
                         value: formData.description,
@@ -1023,7 +1026,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                             width: '100%',
                             padding: '10px',
                             marginBottom: '15px',
-                            border: '1px solid #d1d5db',
+                            border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '6px',
                             fontSize: '14px',
                             minHeight: '80px',
@@ -1031,7 +1034,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                             boxSizing: 'border-box'
                         }
                     }),
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Priority'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Priority'),
                     React.createElement('select', {
                         value: formData.priority,
                         onChange: (e) => setFormData({ ...formData, priority: e.target.value }),
@@ -1040,12 +1043,12 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                             width: '100%',
                             padding: '10px',
                             marginBottom: '20px',
-                            border: '1px solid #d1d5db',
+                            border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '6px',
                             fontSize: '14px',
                             boxSizing: 'border-box',
                             fontFamily: 'inherit',
-                            backgroundColor: 'white'
+                            backgroundColor: 'rgba(20, 20, 32, 0.75)'
                         }
                     },
                         React.createElement('option', { value: 'low' }, '🟢 Low Priority'),
@@ -1055,14 +1058,14 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
 
                     // Focus Timer Section
                     React.createElement('div', { style: { 
-                        backgroundColor: '#fef3c7',
+                        backgroundColor: 'rgba(251, 191, 36, 0.12)',
                         border: '2px solid #fbbf24',
                         borderRadius: '8px',
                         padding: '15px',
                         marginBottom: '20px'
                     }},
                         React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' } },
-                            React.createElement('label', { style: { fontWeight: '700', color: '#92400e', fontSize: '14px', margin: '0' } }, '⏱️ Focus Timer'),
+                            React.createElement('label', { style: { fontWeight: '700', color: '#fbbf24', fontSize: '14px', margin: '0' } }, '⏱️ Focus Timer'),
                             React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '10px' } },
                                 React.createElement('button', {
                                     onClick: () => {
@@ -1079,7 +1082,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                                     },
                                     style: {
                                         padding: '6px 10px',
-                                        backgroundColor: taskTimerActive ? '#d1d5db' : '#ef4444',
+                                        backgroundColor: taskTimerActive ? 'rgba(255,255,255,0.08)' : '#ef4444',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -1094,12 +1097,12 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                                     }
                                 }, '−'),
                                 React.createElement('div', { style: { 
-                                    backgroundColor: 'white',
+                                    backgroundColor: 'rgba(20, 20, 32, 0.75)',
                                     padding: '10px 20px',
                                     borderRadius: '6px',
                                     fontSize: '24px',
                                     fontWeight: 'bold',
-                                    color: '#1f2937',
+                                    color: '#f0f0f5',
                                     fontFamily: 'monospace',
                                     minWidth: '100px',
                                     textAlign: 'center',
@@ -1120,7 +1123,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                                     },
                                     style: {
                                         padding: '6px 10px',
-                                        backgroundColor: taskTimerActive ? '#d1d5db' : '#10b981',
+                                        backgroundColor: taskTimerActive ? 'rgba(255,255,255,0.08)' : '#10b981',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -1238,8 +1241,8 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                             style: {
                                 flex: 1,
                                 padding: '10px 20px',
-                                backgroundColor: '#e5e7eb',
-                                color: '#333',
+                                backgroundColor: 'rgba(255,255,255,0.06)',
+                                color: '#f0f0f5',
                                 border: 'none',
                                 borderRadius: '6px',
                                 cursor: 'pointer',
@@ -1267,22 +1270,22 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
         ),
 
         filteredTasks.map((task, idx) => React.createElement('div', { key: task.id, style: {
-            backgroundColor: 'white',
+            backgroundColor: 'rgba(20, 20, 32, 0.75)',
             padding: '18px',
             marginBottom: '12px',
             borderRadius: '10px',
-            border: '1px solid #e5e7eb',
+            border: '1px solid rgba(255,255,255,0.08)',
             display: 'flex',
             flexDirection: 'column',
             gap: '12px',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
             borderLeft: '4px solid #3b82f6',
             animation: 'slideUp 0.4s ease-out backwards',
             animationDelay: `${idx * 0.08}s`,
             transition: 'all 0.2s'
         },
         onMouseEnter: (e) => {
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.4), 0 0 20px rgba(99,102,241,0.1)';
             e.currentTarget.style.transform = 'translateY(-2px)';
         },
         onMouseLeave: (e) => {
@@ -1296,7 +1299,7 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                     style: {
                         padding: '6px 10px',
                         backgroundColor: 'transparent',
-                        border: '1px solid #d1d5db',
+                        border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '4px',
                         cursor: 'pointer',
                         fontSize: '12px',
@@ -1305,23 +1308,23 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                         transition: 'all 0.2s'
                     }
                 }, expandedTasks[task.id] ? '▼ Collapse' : '▶ Expand'),
-                React.createElement('h3', { style: { margin: '0', flex: 1, color: '#1f2937', fontSize: '14px', fontWeight: '600' } }, task.title),
+                React.createElement('h3', { style: { margin: '0', flex: 1, color: '#f0f0f5', fontSize: '14px', fontWeight: '600' } }, task.title),
                 React.createElement('span', { style: { backgroundColor: task.priority === 'high' ? '#fee2e2' : task.priority === 'medium' ? '#fef3c7' : '#dcfce7', color: task.priority === 'high' ? '#991b1b' : task.priority === 'medium' ? '#92400e' : '#166534', padding: '3px 10px', borderRadius: '12px', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', whiteSpace: 'nowrap' } }, task.priority)
             ),
             
             // Expanded content
             expandedTasks[task.id] && React.createElement('div', { style: { 
-                backgroundColor: '#f9fafb',
+                backgroundColor: 'rgba(20, 20, 32, 0.5)',
                 padding: '12px',
                 borderRadius: '4px',
                 borderLeft: '4px solid #3b82f6'
             }},
-                task.description && React.createElement('p', { style: { margin: '0 0 10px 0', color: '#555', fontSize: '13px', lineHeight: '1.6', whiteSpace: 'pre-wrap', wordBreak: 'break-word' } }, task.description),
-                React.createElement('p', { style: { margin: '0', color: '#9ca3af', fontSize: '11px' } }, '📊 Status: ' + (task.status === 'completed' ? '✓ Completed' : '⏳ Pending'))
+                task.description && React.createElement('p', { style: { margin: '0 0 10px 0', color: '#a0a0b8', fontSize: '13px', lineHeight: '1.6', whiteSpace: 'pre-wrap', wordBreak: 'break-word' } }, task.description),
+                React.createElement('p', { style: { margin: '0', color: '#6b6b80', fontSize: '11px' } }, '📊 Status: ' + (task.status === 'completed' ? '✓ Completed' : '⏳ Pending'))
             ),
             
             // Collapsed preview
-            !expandedTasks[task.id] && task.description && React.createElement('p', { style: { margin: '0 0 8px 0', color: '#666', fontSize: '13px', maxHeight: '80px', overflow: 'hidden', whiteSpace: 'pre-wrap', wordBreak: 'break-word', lineHeight: '1.5' } }, task.description.substring(0, 150) + (task.description.length > 150 ? '...' : '')),
+            !expandedTasks[task.id] && task.description && React.createElement('p', { style: { margin: '0 0 8px 0', color: '#a0a0b8', fontSize: '13px', maxHeight: '80px', overflow: 'hidden', whiteSpace: 'pre-wrap', wordBreak: 'break-word', lineHeight: '1.5' } }, task.description.substring(0, 150) + (task.description.length > 150 ? '...' : '')),
             
             // Action buttons
             React.createElement('div', { style: { display: 'flex', gap: '8px' } },
@@ -1329,8 +1332,8 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                     onClick: () => handleCompleteTask(task.id),
                     style: {
                         padding: '8px 12px',
-                        backgroundColor: '#d1fae5',
-                        color: '#065f46',
+                        backgroundColor: 'rgba(52, 211, 153, 0.12)',
+                        color: '#34d399',
                         border: 'none',
                         borderRadius: '6px',
                         cursor: 'pointer',
@@ -1350,8 +1353,8 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                     onClick: () => handleEditTask(task),
                     style: {
                         padding: '8px 12px',
-                        backgroundColor: '#dbeafe',
-                        color: '#0c4a6e',
+                        backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                        color: '#38bdf8',
                         border: 'none',
                         borderRadius: '6px',
                         cursor: 'pointer',
@@ -1371,8 +1374,8 @@ function Tasks({ refreshTrigger, onRefresh, filterStatus }) {
                     onClick: () => handleDeleteTask(task.id),
                     style: {
                         padding: '8px 12px',
-                        backgroundColor: '#fee2e2',
-                        color: '#991b1b',
+                        backgroundColor: 'rgba(248, 113, 113, 0.12)',
+                        color: '#f87171',
                         border: 'none',
                         borderRadius: '6px',
                         cursor: 'pointer',
@@ -1411,7 +1414,7 @@ function Schedule({ refreshTrigger, onRefresh }) {
     const [filterPriority, setFilterPriority] = useState('all');
 
     const loadEvents = () => {
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/schedule')
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/schedule')
             .then(res => res.json())
             .then(data => {
                 setEvents(data || []);
@@ -1445,7 +1448,7 @@ function Schedule({ refreshTrigger, onRefresh }) {
             alert('Please enter event title and date');
             return;
         }
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/schedule', {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/schedule', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -1489,7 +1492,7 @@ function Schedule({ refreshTrigger, onRefresh }) {
             alert('Please enter event title and date');
             return;
         }
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/schedule/' + editingId, {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/schedule/' + editingId, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -1514,7 +1517,7 @@ function Schedule({ refreshTrigger, onRefresh }) {
 
     const handleDeleteEvent = (eventId) => {
         if (confirm('Delete this event?')) {
-            fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/schedule/' + eventId, { method: 'DELETE' })
+            fetch('https://genai-backend-1013063132017.us-central1.run.app/api/schedule/' + eventId, { method: 'DELETE' })
             .then(() => {
                 loadEvents();
                 onRefresh();
@@ -1538,18 +1541,18 @@ function Schedule({ refreshTrigger, onRefresh }) {
 
     const getStatusColor = (status) => {
         switch(status) {
-            case 'completed': return { bg: '#dcfce7', text: '#166534', badge: '✓' };
-            case 'important': return { bg: '#fee2e2', text: '#991b1b', badge: '!' };
-            default: return { bg: '#eff6ff', text: '#0c4a6e', badge: '📅' };
+            case 'completed': return { bg: 'rgba(52, 211, 153, 0.12)', text: '#34d399', badge: '✓' };
+            case 'important': return { bg: 'rgba(248, 113, 113, 0.12)', text: '#f87171', badge: '⚠️' };
+            default: return { bg: 'rgba(56, 189, 248, 0.12)', text: '#38bdf8', badge: '📅' };
         }
     };
 
     const getPriorityColor = (priority) => {
         switch(priority) {
-            case 'high': return { bg: '#fee2e2', text: '#991b1b', label: '🔴 High', border: '#fca5a5' };
-            case 'medium': return { bg: '#fef08a', text: '#854d0e', label: '🟡 Medium', border: '#fde047' };
-            case 'low': return { bg: '#dbeafe', text: '#0c4a6e', label: '🟢 Low', border: '#93c5fd' };
-            default: return { bg: '#fef08a', text: '#854d0e', label: '🟡 Medium', border: '#fde047' };
+            case 'high': return { bg: 'rgba(248, 113, 113, 0.12)', text: '#f87171', label: '🔴 High', border: '#f87171' };
+            case 'medium': return { bg: 'rgba(251, 191, 36, 0.12)', text: '#fbbf24', label: '🟡 Medium', border: '#fbbf24' };
+            case 'low': return { bg: 'rgba(52, 211, 153, 0.12)', text: '#34d399', label: '🟢 Low', border: '#34d399' };
+            default: return { bg: 'rgba(251, 191, 36, 0.12)', text: '#fbbf24', label: '🟡 Medium', border: '#fbbf24' };
         }
     };
 
@@ -1567,69 +1570,69 @@ function Schedule({ refreshTrigger, onRefresh }) {
     const groupedEvents = groupEventsByDate(filteredEvents);
     const sortedDates = Object.keys(groupedEvents).sort();
 
-    if (loading) return React.createElement('div', { className: 'container' }, React.createElement('p', { style: { textAlign: 'center', color: '#999' } }, 'Loading calendar...'));
+    if (loading) return React.createElement('div', { className: 'container' }, React.createElement('p', { style: { textAlign: 'center', color: '#6b6b80' } }, 'Loading calendar...'));
 
     return React.createElement('div', { className: 'container' },
         // Header
         React.createElement('div', { style: { marginBottom: '30px' } },
             React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' } },
                 React.createElement('div', null,
-                    React.createElement('h2', { style: { margin: '0 0 8px 0', color: '#1f2937', fontSize: '24px', fontWeight: '700' } }, '📅 Schedule'),
-                    React.createElement('p', { style: { margin: '0', color: '#9ca3af', fontSize: '13px' } }, 'Manage and organize your events')
+                    React.createElement('h2', { style: { margin: '0 0 8px 0', color: '#f0f0f5', fontSize: '24px', fontWeight: '700' } }, '📅 Schedule'),
+                    React.createElement('p', { style: { margin: '0', color: '#6b6b80', fontSize: '13px' } }, 'Manage and organize your events')
                 ),
                 React.createElement('button', { onClick: () => { setShowForm(!showForm); if (showForm) resetForm(); }, style: { padding: '10px 18px', backgroundColor: '#8b5cf6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' } }, showForm ? '✕ Cancel' : '➕ New Event')
             ),
 
-            React.createElement('h4', { style: { margin: '0 0 10px 0', color: '#1f2937', fontSize: '13px', fontWeight: '600' } }, 'Filter by Status:'),
-            React.createElement('div', { style: { display: 'flex', gap: '8px', padding: '12px', backgroundColor: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb', marginBottom: '15px', flexWrap: 'wrap' } },
-                React.createElement('button', { onClick: () => setFilterStatus('all'), style: { padding: '6px 14px', backgroundColor: filterStatus === 'all' ? '#8b5cf6' : '#f3f4f6', color: filterStatus === 'all' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, 'All Events'),
-                React.createElement('button', { onClick: () => setFilterStatus('upcoming'), style: { padding: '6px 14px', backgroundColor: filterStatus === 'upcoming' ? '#8b5cf6' : '#f3f4f6', color: filterStatus === 'upcoming' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, '📅 Upcoming'),
-                React.createElement('button', { onClick: () => setFilterStatus('important'), style: { padding: '6px 14px', backgroundColor: filterStatus === 'important' ? '#8b5cf6' : '#f3f4f6', color: filterStatus === 'important' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, '⚠️ Important'),
-                React.createElement('button', { onClick: () => setFilterStatus('completed'), style: { padding: '6px 14px', backgroundColor: filterStatus === 'completed' ? '#8b5cf6' : '#f3f4f6', color: filterStatus === 'completed' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, '✓ Completed')
+            React.createElement('h4', { style: { margin: '0 0 10px 0', color: '#f0f0f5', fontSize: '13px', fontWeight: '600' } }, 'Filter by Status:'),
+            React.createElement('div', { style: { display: 'flex', gap: '8px', padding: '12px', backgroundColor: 'rgba(20, 20, 32, 0.5)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '15px', flexWrap: 'wrap' } },
+                React.createElement('button', { onClick: () => setFilterStatus('all'), style: { padding: '6px 14px', backgroundColor: filterStatus === 'all' ? '#8b5cf6' : 'rgba(255,255,255,0.06)', color: filterStatus === 'all' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, 'All Events'),
+                React.createElement('button', { onClick: () => setFilterStatus('upcoming'), style: { padding: '6px 14px', backgroundColor: filterStatus === 'upcoming' ? '#8b5cf6' : 'rgba(255,255,255,0.06)', color: filterStatus === 'upcoming' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, '📅 Upcoming'),
+                React.createElement('button', { onClick: () => setFilterStatus('important'), style: { padding: '6px 14px', backgroundColor: filterStatus === 'important' ? '#8b5cf6' : 'rgba(255,255,255,0.06)', color: filterStatus === 'important' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, '⚠️ Important'),
+                React.createElement('button', { onClick: () => setFilterStatus('completed'), style: { padding: '6px 14px', backgroundColor: filterStatus === 'completed' ? '#8b5cf6' : 'rgba(255,255,255,0.06)', color: filterStatus === 'completed' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, '✓ Completed')
             ),
 
-            React.createElement('h4', { style: { margin: '0 0 10px 0', color: '#1f2937', fontSize: '13px', fontWeight: '600' } }, 'Filter by Priority:'),
-            React.createElement('div', { style: { display: 'flex', gap: '8px', padding: '12px', backgroundColor: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb', marginBottom: '20px', flexWrap: 'wrap' } },
-                React.createElement('button', { onClick: () => setFilterPriority('all'), style: { padding: '6px 14px', backgroundColor: filterPriority === 'all' ? '#8b5cf6' : '#f3f4f6', color: filterPriority === 'all' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, 'All Priorities'),
-                React.createElement('button', { onClick: () => setFilterPriority('high'), style: { padding: '6px 14px', backgroundColor: filterPriority === 'high' ? '#dc2626' : '#f3f4f6', color: filterPriority === 'high' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, '🔴 High'),
-                React.createElement('button', { onClick: () => setFilterPriority('medium'), style: { padding: '6px 14px', backgroundColor: filterPriority === 'medium' ? '#ea580c' : '#f3f4f6', color: filterPriority === 'medium' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, '🟡 Medium'),
-                React.createElement('button', { onClick: () => setFilterPriority('low'), style: { padding: '6px 14px', backgroundColor: filterPriority === 'low' ? '#16a34a' : '#f3f4f6', color: filterPriority === 'low' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, '🟢 Low')
+            React.createElement('h4', { style: { margin: '0 0 10px 0', color: '#f0f0f5', fontSize: '13px', fontWeight: '600' } }, 'Filter by Priority:'),
+            React.createElement('div', { style: { display: 'flex', gap: '8px', padding: '12px', backgroundColor: 'rgba(20, 20, 32, 0.5)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '20px', flexWrap: 'wrap' } },
+                React.createElement('button', { onClick: () => setFilterPriority('all'), style: { padding: '6px 14px', backgroundColor: filterPriority === 'all' ? '#8b5cf6' : 'rgba(255,255,255,0.06)', color: filterPriority === 'all' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, 'All Priorities'),
+                React.createElement('button', { onClick: () => setFilterPriority('high'), style: { padding: '6px 14px', backgroundColor: filterPriority === 'high' ? '#dc2626' : 'rgba(255,255,255,0.06)', color: filterPriority === 'high' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, '🔴 High'),
+                React.createElement('button', { onClick: () => setFilterPriority('medium'), style: { padding: '6px 14px', backgroundColor: filterPriority === 'medium' ? '#ea580c' : 'rgba(255,255,255,0.06)', color: filterPriority === 'medium' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, '🟡 Medium'),
+                React.createElement('button', { onClick: () => setFilterPriority('low'), style: { padding: '6px 14px', backgroundColor: filterPriority === 'low' ? '#16a34a' : 'rgba(255,255,255,0.06)', color: filterPriority === 'low' ? 'white' : '#6b7280', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', transition: 'all 0.2s' } }, '🟢 Low')
             )
         ),
 
         // Create/Edit Event Form
-        showForm && React.createElement('div', { style: { backgroundColor: '#f0f4ff', padding: '24px', borderRadius: '12px', marginBottom: '30px', border: '2px solid #8b5cf6' } },
-            React.createElement('h3', { style: { margin: '0 0 20px 0', color: '#1f2937', fontSize: '15px', fontWeight: '700', letterSpacing: '0.5px' } }, editingId ? '✏️ Edit Event' : '✨ Create New Event'),
+        showForm && React.createElement('div', { style: { backgroundColor: 'rgba(99, 102, 241, 0.08)', padding: '24px', borderRadius: '12px', marginBottom: '30px', border: '2px solid #8b5cf6' } },
+            React.createElement('h3', { style: { margin: '0 0 20px 0', color: '#f0f0f5', fontSize: '15px', fontWeight: '700', letterSpacing: '0.5px' } }, editingId ? '✏️ Edit Event' : '✨ Create New Event'),
             React.createElement('div', { style: { marginBottom: '15px' } },
-                React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Event Title *'),
-                React.createElement('input', { type: 'text', placeholder: 'e.g., Team Meeting', value: formData.title, onChange: (e) => setFormData({ ...formData, title: e.target.value }), style: { width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box', fontFamily: 'inherit' } })
+                React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Event Title *'),
+                React.createElement('input', { type: 'text', placeholder: 'e.g., Team Meeting', value: formData.title, onChange: (e) => setFormData({ ...formData, title: e.target.value }), style: { width: '100%', padding: '10px 12px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box', fontFamily: 'inherit' } })
             ),
             React.createElement('div', { style: { marginBottom: '15px' } },
-                React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Description'),
-                React.createElement('textarea', { placeholder: 'Add event details...', value: formData.description, onChange: (e) => setFormData({ ...formData, description: e.target.value }), style: { width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box', fontFamily: 'inherit', minHeight: '80px', resize: 'vertical' } })
+                React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Description'),
+                React.createElement('textarea', { placeholder: 'Add event details...', value: formData.description, onChange: (e) => setFormData({ ...formData, description: e.target.value }), style: { width: '100%', padding: '10px 12px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box', fontFamily: 'inherit', minHeight: '80px', resize: 'vertical' } })
             ),
             React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' } },
                 React.createElement('div', null,
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Date *'),
-                    React.createElement('input', { type: 'date', value: formData.date, onChange: (e) => setFormData({ ...formData, date: e.target.value }), style: { width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box', fontFamily: 'inherit' } })
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Date *'),
+                    React.createElement('input', { type: 'date', value: formData.date, onChange: (e) => setFormData({ ...formData, date: e.target.value }), style: { width: '100%', padding: '10px 12px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box', fontFamily: 'inherit' } })
                 ),
                 React.createElement('div', null,
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Time'),
-                    React.createElement('input', { type: 'time', value: formData.time, onChange: (e) => setFormData({ ...formData, time: e.target.value }), style: { width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box', fontFamily: 'inherit' } })
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Time'),
+                    React.createElement('input', { type: 'time', value: formData.time, onChange: (e) => setFormData({ ...formData, time: e.target.value }), style: { width: '100%', padding: '10px 12px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box', fontFamily: 'inherit' } })
                 )
             ),
             React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' } },
                 React.createElement('div', null,
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Priority'),
-                    React.createElement('select', { value: formData.priority, onChange: (e) => setFormData({ ...formData, priority: e.target.value }), style: { width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box', fontFamily: 'inherit', backgroundColor: 'white' } },
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Priority'),
+                    React.createElement('select', { value: formData.priority, onChange: (e) => setFormData({ ...formData, priority: e.target.value }), style: { width: '100%', padding: '10px 12px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box', fontFamily: 'inherit', backgroundColor: 'rgba(20, 20, 32, 0.75)' } },
                         React.createElement('option', { value: 'low' }, '🟢 Low'),
                         React.createElement('option', { value: 'medium' }, '🟡 Medium'),
                         React.createElement('option', { value: 'high' }, '🔴 High')
                     )
                 ),
                 React.createElement('div', null,
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Status'),
-                    React.createElement('select', { value: formData.status, onChange: (e) => setFormData({ ...formData, status: e.target.value }), style: { width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box', fontFamily: 'inherit', backgroundColor: 'white' } },
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Status'),
+                    React.createElement('select', { value: formData.status, onChange: (e) => setFormData({ ...formData, status: e.target.value }), style: { width: '100%', padding: '10px 12px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '13px', boxSizing: 'border-box', fontFamily: 'inherit', backgroundColor: 'rgba(20, 20, 32, 0.75)' } },
                         React.createElement('option', { value: 'upcoming' }, '📅 Upcoming'),
                         React.createElement('option', { value: 'important' }, '⚠️ Important'),
                         React.createElement('option', { value: 'completed' }, '✓ Completed')
@@ -1637,21 +1640,21 @@ function Schedule({ refreshTrigger, onRefresh }) {
                 )
             ),
             React.createElement('div', { style: { display: 'flex', gap: '10px' } },
-                React.createElement('button', { onClick: resetForm, style: { flex: 1, padding: '10px 20px', backgroundColor: '#e5e7eb', color: '#333', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' } }, 'Cancel'),
+                React.createElement('button', { onClick: resetForm, style: { flex: 1, padding: '10px 20px', backgroundColor: 'rgba(255,255,255,0.06)', color: '#f0f0f5', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' } }, 'Cancel'),
                 React.createElement('button', { onClick: editingId ? handleUpdateEvent : handleCreateEvent, style: { flex: 1, padding: '10px 20px', backgroundColor: '#8b5cf6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' } }, editingId ? 'Update Event' : 'Create Event')
             )
         ),
 
         // Events List
-        filteredEvents.length === 0 && React.createElement('div', { style: { textAlign: 'center', padding: '40px 20px', backgroundColor: '#f9fafb', borderRadius: '12px', border: '2px dashed #e5e7eb' } },
+        filteredEvents.length === 0 && React.createElement('div', { style: { textAlign: 'center', padding: '40px 20px', backgroundColor: 'rgba(20, 20, 32, 0.5)', borderRadius: '12px', border: '2px dashed rgba(255,255,255,0.1)' } },
             React.createElement('p', { style: { fontSize: '32px', margin: '0 0 10px 0' } }, '📅'),
-            React.createElement('h3', { style: { margin: '0 0 8px 0', color: '#666' } }, 'No events scheduled'),
-            React.createElement('p', { style: { margin: '0', color: '#999', fontSize: '13px' } }, 'Create an event to get started!')
+            React.createElement('h3', { style: { margin: '0 0 8px 0', color: '#a0a0b8' } }, 'No events scheduled'),
+            React.createElement('p', { style: { margin: '0', color: '#6b6b80', fontSize: '13px' } }, 'Create an event to get started!')
         ),
 
         // Grouped Events
         sortedDates.map(date => React.createElement('div', { key: date, style: { marginBottom: '30px' } },
-            React.createElement('h3', { style: { margin: '0 0 15px 0', color: '#1f2937', fontSize: '14px', fontWeight: '700', letterSpacing: '0.5px', textTransform: 'uppercase', borderBottom: '2px solid #8b5cf6', paddingBottom: '10px' } }, '📆 ' + date),
+            React.createElement('h3', { style: { margin: '0 0 15px 0', color: '#f0f0f5', fontSize: '14px', fontWeight: '700', letterSpacing: '0.5px', textTransform: 'uppercase', borderBottom: '2px solid #8b5cf6', paddingBottom: '10px' } }, '📆 ' + date),
             
             groupedEvents[date].map((event, idx) => {
                 const statusColor = getStatusColor(event.status || 'upcoming');
@@ -1659,17 +1662,17 @@ function Schedule({ refreshTrigger, onRefresh }) {
                 const eventDate = new Date(event.event_time);
                 const timeStr = eventDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
                 
-                return React.createElement('div', { key: event.id, style: { backgroundColor: 'white', padding: '16px', marginBottom: '12px', borderRadius: '10px', border: '2px solid ' + priorityColor.border, display: 'flex', flexDirection: 'column', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', cursor: 'pointer', animation: 'slideUp 0.4s ease-out backwards', animationDelay: idx * 0.08 + 's' }, onMouseEnter: (e) => { e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; e.currentTarget.style.transform = 'translateY(-2px)'; }, onMouseLeave: (e) => { e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)'; e.currentTarget.style.transform = 'translateY(0)'; } },
+                return React.createElement('div', { key: event.id, style: { backgroundColor: 'rgba(20, 20, 32, 0.75)', padding: '16px', marginBottom: '12px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', borderLeft: '4px solid ' + priorityColor.border, display: 'flex', flexDirection: 'column', transition: 'all 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.3)', cursor: 'pointer', animation: 'slideUp 0.4s ease-out backwards', animationDelay: idx * 0.08 + 's' }, onMouseEnter: (e) => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.4), 0 0 20px rgba(99,102,241,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.transform = 'translateY(-2px)'; }, onMouseLeave: (e) => { e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.3)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)'; } },
                     // Top section - Content with priority on right
                     React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' } },
                         React.createElement('div', { style: { flex: 1 } },
                             React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' } },
                                 React.createElement('span', { style: { fontSize: '18px' } }, statusColor.badge),
-                                React.createElement('h4', { style: { margin: '0', color: '#1f2937', fontSize: '14px', fontWeight: '600' } }, event.title),
+                                React.createElement('h4', { style: { margin: '0', color: '#f0f0f5', fontSize: '14px', fontWeight: '600' } }, event.title),
                                 React.createElement('span', { style: { backgroundColor: statusColor.bg, color: statusColor.text, padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600', textTransform: 'capitalize' } }, event.status || 'upcoming')
                             ),
-                            React.createElement('p', { style: { margin: '0 0 6px 0', color: '#9ca3af', fontSize: '12px' } }, '⏰ ' + timeStr),
-                            event.description && React.createElement('p', { style: { margin: '0', color: '#6b7280', fontSize: '13px', lineHeight: '1.4' } }, event.description)
+                            React.createElement('p', { style: { margin: '0 0 6px 0', color: '#6b6b80', fontSize: '12px' } }, '⏰ ' + timeStr),
+                            event.description && React.createElement('p', { style: { margin: '0', color: '#a0a0b8', fontSize: '13px', lineHeight: '1.4' } }, event.description)
                         ),
                         // Right side - Priority
                         React.createElement('div', { style: { display: 'flex', flexShrink: 0, marginLeft: '12px' } },
@@ -1678,8 +1681,8 @@ function Schedule({ refreshTrigger, onRefresh }) {
                     ),
                     // Bottom section - Buttons on left
                     React.createElement('div', { style: { display: 'flex', gap: '8px', alignItems: 'center' } },
-                        React.createElement('button', { onClick: () => { handleEditEvent(event); setShowForm(true); }, style: { padding: '6px 10px', backgroundColor: '#dbeafe', color: '#0c4a6e', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: '600', transition: 'all 0.2s', whiteSpace: 'nowrap' }, onMouseEnter: (e) => { e.currentTarget.style.backgroundColor = '#bfdbfe'; }, onMouseLeave: (e) => { e.currentTarget.style.backgroundColor = '#dbeafe'; } }, '✏️ Edit'),
-                        React.createElement('button', { onClick: () => handleDeleteEvent(event.id), style: { padding: '6px 10px', backgroundColor: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: '600', transition: 'all 0.2s', whiteSpace: 'nowrap' }, onMouseEnter: (e) => { e.currentTarget.style.backgroundColor = '#fecaca'; }, onMouseLeave: (e) => { e.currentTarget.style.backgroundColor = '#fee2e2'; } }, '✕ Delete')
+                        React.createElement('button', { onClick: () => { handleEditEvent(event); setShowForm(true); }, style: { padding: '6px 10px', backgroundColor: 'rgba(56, 189, 248, 0.12)', color: '#38bdf8', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: '600', transition: 'all 0.2s', whiteSpace: 'nowrap' }, onMouseEnter: (e) => { e.currentTarget.style.backgroundColor = 'rgba(56, 189, 248, 0.2)'; }, onMouseLeave: (e) => { e.currentTarget.style.backgroundColor = 'rgba(56, 189, 248, 0.12)'; } }, '✏️ Edit'),
+                        React.createElement('button', { onClick: () => handleDeleteEvent(event.id), style: { padding: '6px 10px', backgroundColor: 'rgba(248, 113, 113, 0.12)', color: '#f87171', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: '600', transition: 'all 0.2s', whiteSpace: 'nowrap' }, onMouseEnter: (e) => { e.currentTarget.style.backgroundColor = 'rgba(248, 113, 113, 0.2)'; }, onMouseLeave: (e) => { e.currentTarget.style.backgroundColor = 'rgba(248, 113, 113, 0.12)'; } }, '✕ Delete')
                     )
                 );
             })
@@ -1708,7 +1711,7 @@ function Notes({ refreshTrigger, onRefresh }) {
     };
 
     const loadNotes = () => {
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/notes')
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/notes')
             .then(res => res.json())
             .then(data => {
                 setNotes((data || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
@@ -1729,7 +1732,7 @@ function Notes({ refreshTrigger, onRefresh }) {
             alert('Please enter note title and content');
             return;
         }
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/notes', {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/notes', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
@@ -1762,7 +1765,7 @@ function Notes({ refreshTrigger, onRefresh }) {
             alert('Please enter note title and content');
             return;
         }
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/notes/' + editingId, {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/notes/' + editingId, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
@@ -1783,7 +1786,7 @@ function Notes({ refreshTrigger, onRefresh }) {
 
     const handleDeleteNote = (noteId) => {
         if (confirm('Delete this note?')) {
-            fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/notes/' + noteId, { method: 'DELETE' })
+            fetch('https://genai-backend-1013063132017.us-central1.run.app/api/notes/' + noteId, { method: 'DELETE' })
             .then(() => {
                 loadNotes();
                 onRefresh();
@@ -1809,7 +1812,7 @@ function Notes({ refreshTrigger, onRefresh }) {
         return matchCategory && matchSearch;
     });
 
-    if (loading) return React.createElement('div', { className: 'container' }, React.createElement('p', { style: { textAlign: 'center', color: '#999' } }, 'Loading notes...'));
+    if (loading) return React.createElement('div', { className: 'container' }, React.createElement('p', { style: { textAlign: 'center', color: '#6b6b80' } }, 'Loading notes...'));
 
     return React.createElement('div', { className: 'container' },
         editingId && React.createElement('div', { style: {
@@ -1831,17 +1834,17 @@ function Notes({ refreshTrigger, onRefresh }) {
             }
         }},
             React.createElement('div', { style: {
-                backgroundColor: 'white',
+                backgroundColor: 'rgba(20, 20, 32, 0.75)',
                 padding: '30px',
                 borderRadius: '12px',
-                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.1)',
                 maxWidth: '500px',
                 width: '90%',
                 maxHeight: '80vh',
                 overflowY: 'auto'
             }},
                 React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' } },
-                    React.createElement('h2', { style: { margin: '0', color: '#1f2937', fontSize: '20px', fontWeight: '700' } }, '✏️ Edit Note'),
+                    React.createElement('h2', { style: { margin: '0', color: '#f0f0f5', fontSize: '20px', fontWeight: '700' } }, '✏️ Edit Note'),
                     React.createElement('button', {
                         onClick: () => {
                             setEditingId(null);
@@ -1853,12 +1856,12 @@ function Notes({ refreshTrigger, onRefresh }) {
                             fontSize: '24px',
                             cursor: 'pointer',
                             padding: '0',
-                            color: '#999'
+                            color: '#6b6b80'
                         }
                     }, '✕')
                 ),
                 React.createElement('div', null,
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Note Title *'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Note Title *'),
                     React.createElement('input', {
                         type: 'text',
                         placeholder: 'e.g., Project Ideas',
@@ -1867,7 +1870,7 @@ function Notes({ refreshTrigger, onRefresh }) {
                         style: {
                             width: '100%',
                             padding: '10px 12px',
-                            border: '1px solid #d1d5db',
+                            border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '8px',
                             fontSize: '13px',
                             boxSizing: 'border-box',
@@ -1875,25 +1878,25 @@ function Notes({ refreshTrigger, onRefresh }) {
                             marginBottom: '15px'
                         }
                     }),
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Category'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Category'),
                     React.createElement('select', {
                         value: formData.category,
                         onChange: (e) => setFormData({ ...formData, category: e.target.value }),
                         style: {
                             width: '100%',
                             padding: '10px 12px',
-                            border: '1px solid #d1d5db',
+                            border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '8px',
                             fontSize: '13px',
                             boxSizing: 'border-box',
                             fontFamily: 'inherit',
-                            backgroundColor: 'white',
+                            backgroundColor: 'rgba(20, 20, 32, 0.75)',
                             marginBottom: '15px'
                         }
                     },
                         categories.map(cat => React.createElement('option', { key: cat, value: cat }, cat.charAt(0).toUpperCase() + cat.slice(1)))
                     ),
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Content *'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Content *'),
                     React.createElement('textarea', {
                         placeholder: 'Write your note here...',
                         value: formData.content,
@@ -1901,7 +1904,7 @@ function Notes({ refreshTrigger, onRefresh }) {
                         style: {
                             width: '100%',
                             padding: '12px',
-                            border: '1px solid #d1d5db',
+                            border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '8px',
                             fontSize: '13px',
                             minHeight: '120px',
@@ -1920,8 +1923,8 @@ function Notes({ refreshTrigger, onRefresh }) {
                             style: {
                                 flex: 1,
                                 padding: '10px 20px',
-                                backgroundColor: '#e5e7eb',
-                                color: '#333',
+                                backgroundColor: 'rgba(255,255,255,0.06)',
+                                color: '#f0f0f5',
                                 border: 'none',
                                 borderRadius: '8px',
                                 cursor: 'pointer',
@@ -1951,8 +1954,8 @@ function Notes({ refreshTrigger, onRefresh }) {
         React.createElement('div', { style: { marginBottom: '30px' } },
             React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' } },
                 React.createElement('div', null,
-                    React.createElement('h2', { style: { margin: '0 0 8px 0', color: '#1f2937', fontSize: '24px', fontWeight: '700' } }, '📝 Notes'),
-                    React.createElement('p', { style: { margin: '0', color: '#9ca3af', fontSize: '13px' } }, 'Capture ideas and important information')
+                    React.createElement('h2', { style: { margin: '0 0 8px 0', color: '#f0f0f5', fontSize: '24px', fontWeight: '700' } }, '📝 Notes'),
+                    React.createElement('p', { style: { margin: '0', color: '#6b6b80', fontSize: '13px' } }, 'Capture ideas and important information')
                 ),
                 React.createElement('button', {
                     onClick: () => setShowForm(!showForm),
@@ -1982,7 +1985,7 @@ function Notes({ refreshTrigger, onRefresh }) {
                     style: {
                         width: '100%',
                         padding: '10px 14px',
-                        border: '1px solid #d1d5db',
+                        border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '8px',
                         fontSize: '13px',
                         boxSizing: 'border-box',
@@ -1992,12 +1995,12 @@ function Notes({ refreshTrigger, onRefresh }) {
             ),
 
             // Category filters
-            React.createElement('div', { style: { display: 'flex', gap: '8px', padding: '12px', backgroundColor: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb', overflowX: 'auto' } },
+            React.createElement('div', { style: { display: 'flex', gap: '8px', padding: '12px', backgroundColor: 'rgba(20, 20, 32, 0.5)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', overflowX: 'auto' } },
                 React.createElement('button', {
                     onClick: () => setFilterCategory('all'),
                     style: {
                         padding: '6px 14px',
-                        backgroundColor: filterCategory === 'all' ? '#06b6d4' : '#f3f4f6',
+                        backgroundColor: filterCategory === 'all' ? '#06b6d4' : 'rgba(255,255,255,0.06)',
                         color: filterCategory === 'all' ? 'white' : '#6b7280',
                         border: 'none',
                         borderRadius: '6px',
@@ -2013,7 +2016,7 @@ function Notes({ refreshTrigger, onRefresh }) {
                     onClick: () => setFilterCategory(cat),
                     style: {
                         padding: '6px 14px',
-                        backgroundColor: filterCategory === cat ? categoryColors[cat] : '#f3f4f6',
+                        backgroundColor: filterCategory === cat ? categoryColors[cat] : 'rgba(255,255,255,0.06)',
                         color: filterCategory === cat ? 'white' : '#6b7280',
                         border: 'none',
                         borderRadius: '6px',
@@ -2030,16 +2033,16 @@ function Notes({ refreshTrigger, onRefresh }) {
 
         // Create Note Form
         showForm && React.createElement('div', { style: {
-            backgroundColor: '#f0f4ff',
+            backgroundColor: 'rgba(99, 102, 241, 0.08)',
             padding: '24px',
             borderRadius: '12px',
             marginBottom: '30px',
             border: '2px solid #06b6d4'
         }},
-            React.createElement('h3', { style: { margin: '0 0 20px 0', color: '#1f2937', fontSize: '15px', fontWeight: '700', letterSpacing: '0.5px' } }, '✨ Create New Note'),
+            React.createElement('h3', { style: { margin: '0 0 20px 0', color: '#f0f0f5', fontSize: '15px', fontWeight: '700', letterSpacing: '0.5px' } }, '✨ Create New Note'),
             React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' } },
                 React.createElement('div', null,
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Note Title *'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Note Title *'),
                     React.createElement('input', {
                         type: 'text',
                         placeholder: 'e.g., Project Ideas',
@@ -2048,7 +2051,7 @@ function Notes({ refreshTrigger, onRefresh }) {
                         style: {
                             width: '100%',
                             padding: '10px 12px',
-                            border: '1px solid #d1d5db',
+                            border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '8px',
                             fontSize: '13px',
                             boxSizing: 'border-box',
@@ -2057,19 +2060,19 @@ function Notes({ refreshTrigger, onRefresh }) {
                     })
                 ),
                 React.createElement('div', null,
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Category'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Category'),
                     React.createElement('select', {
                         value: formData.category,
                         onChange: (e) => setFormData({ ...formData, category: e.target.value }),
                         style: {
                             width: '100%',
                             padding: '10px 12px',
-                            border: '1px solid #d1d5db',
+                            border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '8px',
                             fontSize: '13px',
                             boxSizing: 'border-box',
                             fontFamily: 'inherit',
-                            backgroundColor: 'white'
+                            backgroundColor: 'rgba(20, 20, 32, 0.75)'
                         }
                     },
                         categories.map(cat => React.createElement('option', { key: cat, value: cat }, cat.charAt(0).toUpperCase() + cat.slice(1)))
@@ -2077,7 +2080,7 @@ function Notes({ refreshTrigger, onRefresh }) {
                 )
             ),
             React.createElement('div', { style: { marginBottom: '15px' } },
-                React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1f2937', fontSize: '13px' } }, 'Content *'),
+                React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600', color: '#f0f0f5', fontSize: '13px' } }, 'Content *'),
                 React.createElement('textarea', {
                     placeholder: 'Write your note here...',
                     value: formData.content,
@@ -2085,7 +2088,7 @@ function Notes({ refreshTrigger, onRefresh }) {
                     style: {
                         width: '100%',
                         padding: '12px',
-                        border: '1px solid #d1d5db',
+                        border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '8px',
                         fontSize: '13px',
                         minHeight: '120px',
@@ -2104,8 +2107,8 @@ function Notes({ refreshTrigger, onRefresh }) {
                     style: {
                         flex: 1,
                         padding: '10px 20px',
-                        backgroundColor: '#e5e7eb',
-                        color: '#333',
+                        backgroundColor: 'rgba(255,255,255,0.06)',
+                        color: '#f0f0f5',
                         border: 'none',
                         borderRadius: '8px',
                         cursor: 'pointer',
@@ -2131,29 +2134,29 @@ function Notes({ refreshTrigger, onRefresh }) {
         ),
 
         // Notes List
-        filteredNotes.length === 0 && React.createElement('div', { style: { textAlign: 'center', padding: '40px 20px', backgroundColor: '#f9fafb', borderRadius: '12px', border: '2px dashed #e5e7eb' } },
+        filteredNotes.length === 0 && React.createElement('div', { style: { textAlign: 'center', padding: '40px 20px', backgroundColor: 'rgba(20, 20, 32, 0.5)', borderRadius: '12px', border: '2px dashed rgba(255,255,255,0.1)' } },
             React.createElement('p', { style: { fontSize: '32px', margin: '0 0 10px 0' } }, '📝'),
-            React.createElement('h3', { style: { margin: '0 0 8px 0', color: '#666' } }, 'No notes found'),
-            React.createElement('p', { style: { margin: '0', color: '#999', fontSize: '13px' } }, searchQuery ? 'Try a different search query' : 'Create a note to get started!')
+            React.createElement('h3', { style: { margin: '0 0 8px 0', color: '#a0a0b8' } }, 'No notes found'),
+            React.createElement('p', { style: { margin: '0', color: '#6b6b80', fontSize: '13px' } }, searchQuery ? 'Try a different search query' : 'Create a note to get started!')
         ),
 
         filteredNotes.map((note, idx) => React.createElement('div', { key: note.id, style: {
-            backgroundColor: 'white',
+            backgroundColor: 'rgba(20, 20, 32, 0.75)',
             padding: '18px',
             marginBottom: '12px',
             borderRadius: '10px',
-            border: '1px solid #e5e7eb',
+            border: '1px solid rgba(255,255,255,0.08)',
             display: 'flex',
             flexDirection: 'column',
             gap: '12px',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
             borderLeft: '4px solid ' + (categoryColors[note.category] || '#06b6d4'),
             animation: 'slideUp 0.4s ease-out backwards',
             animationDelay: `${idx * 0.08}s`,
             transition: 'all 0.2s'
         },
         onMouseEnter: (e) => {
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.4), 0 0 20px rgba(99,102,241,0.1)';
             e.currentTarget.style.transform = 'translateY(-2px)';
         },
         onMouseLeave: (e) => {
@@ -2167,7 +2170,7 @@ function Notes({ refreshTrigger, onRefresh }) {
                     style: {
                         padding: '6px 10px',
                         backgroundColor: 'transparent',
-                        border: '1px solid #d1d5db',
+                        border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '4px',
                         cursor: 'pointer',
                         fontSize: '12px',
@@ -2176,23 +2179,23 @@ function Notes({ refreshTrigger, onRefresh }) {
                         transition: 'all 0.2s'
                     }
                 }, expandedNotes[note.id] ? '▼ Collapse' : '▶ Expand'),
-                React.createElement('h3', { style: { margin: '0', flex: 1, color: '#1f2937', fontSize: '14px', fontWeight: '600' } }, note.title),
+                React.createElement('h3', { style: { margin: '0', flex: 1, color: '#f0f0f5', fontSize: '14px', fontWeight: '600' } }, note.title),
                 React.createElement('span', { style: { backgroundColor: categoryColors[note.category] || '#06b6d4', color: 'white', padding: '3px 10px', borderRadius: '12px', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', whiteSpace: 'nowrap' } }, note.category || 'general')
             ),
             
             // Expanded content
             expandedNotes[note.id] && React.createElement('div', { style: {
-                backgroundColor: '#f9fafb',
+                backgroundColor: 'rgba(20, 20, 32, 0.5)',
                 padding: '12px',
                 borderRadius: '4px',
                 borderLeft: '4px solid ' + (categoryColors[note.category] || '#06b6d4')
             }},
-                React.createElement('p', { style: { margin: '0 0 8px 0', color: '#555', fontSize: '13px', lineHeight: '1.6', whiteSpace: 'pre-wrap', wordBreak: 'break-word' } }, note.content),
-                React.createElement('p', { style: { margin: '0', color: '#9ca3af', fontSize: '11px' } }, '📅 ' + new Date(note.created_at).toLocaleDateString() + ' at ' + new Date(note.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }))
+                React.createElement('p', { style: { margin: '0 0 8px 0', color: '#a0a0b8', fontSize: '13px', lineHeight: '1.6', whiteSpace: 'pre-wrap', wordBreak: 'break-word' } }, note.content),
+                React.createElement('p', { style: { margin: '0', color: '#6b6b80', fontSize: '11px' } }, '📅 ' + new Date(note.created_at).toLocaleDateString() + ' at ' + new Date(note.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }))
             ),
             
             // Collapsed preview
-            !expandedNotes[note.id] && React.createElement('p', { style: { margin: '0 0 8px 0', color: '#666', fontSize: '13px', maxHeight: '80px', overflow: 'hidden', whiteSpace: 'pre-wrap', wordBreak: 'break-word', lineHeight: '1.5' } }, note.content.substring(0, 150) + (note.content.length > 150 ? '...' : '')),
+            !expandedNotes[note.id] && React.createElement('p', { style: { margin: '0 0 8px 0', color: '#a0a0b8', fontSize: '13px', maxHeight: '80px', overflow: 'hidden', whiteSpace: 'pre-wrap', wordBreak: 'break-word', lineHeight: '1.5' } }, note.content.substring(0, 150) + (note.content.length > 150 ? '...' : '')),
             
             // Action buttons
             React.createElement('div', { style: { display: 'flex', gap: '8px' } },
@@ -2200,8 +2203,8 @@ function Notes({ refreshTrigger, onRefresh }) {
                     onClick: () => handleEditNote(note),
                     style: {
                         padding: '8px 12px',
-                        backgroundColor: '#dbeafe',
-                        color: '#0c4a6e',
+                        backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                        color: '#38bdf8',
                         border: 'none',
                         borderRadius: '6px',
                         cursor: 'pointer',
@@ -2221,8 +2224,8 @@ function Notes({ refreshTrigger, onRefresh }) {
                     onClick: () => handleDeleteNote(note.id),
                     style: {
                         padding: '8px 12px',
-                        backgroundColor: '#fee2e2',
-                        color: '#991b1b',
+                        backgroundColor: 'rgba(248, 113, 113, 0.12)',
+                        color: '#f87171',
                         border: 'none',
                         borderRadius: '6px',
                         cursor: 'pointer',
@@ -2243,7 +2246,7 @@ function Notes({ refreshTrigger, onRefresh }) {
     );
 }
 
-// ====== WORKFLOW COMPONENT ======
+// ====== WORKFLOW COMPONENT (TASK AUTOMATION BUILDER) ======
 function Workflow({ refreshTrigger, onRefresh }) {
     const [workflows, setWorkflows] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -2251,6 +2254,58 @@ function Workflow({ refreshTrigger, onRefresh }) {
     const [formData, setFormData] = useState({ description: '', workflowType: 'general' });
     const [selectedWorkflow, setSelectedWorkflow] = useState(null);
     const [filterStatus, setFilterStatus] = useState('all');
+    const [activeView, setActiveView] = useState('builder'); // 'builder' | 'history' | 'ai'
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [editingNode, setEditingNode] = useState(null); // 'trigger' | 'condition' | 'action' | 'schedule'
+    const [automations, setAutomations] = useState([]);
+    const [currentAutomation, setCurrentAutomation] = useState({
+        id: null, name: '', enabled: true,
+        trigger: { type: 'time', value: '09:00', label: 'Every day at 9:00 AM' },
+        condition: { type: 'tasks_pending', operator: '>', value: '0', label: 'If pending tasks > 0' },
+        action: { type: 'notification', value: 'Complete your pending tasks!', label: 'Send notification reminder' },
+        schedule: { type: 'daily', value: '1', label: 'Repeat daily' }
+    });
+
+
+
+    const presetAutomations = [
+        { name: '🌅 Morning Task Reminder', trigger: { type: 'time', value: '09:00', label: 'Every day at 9:00 AM' }, condition: { type: 'tasks_pending', operator: '>', value: '0', label: 'If pending tasks > 0' }, action: { type: 'notification', value: 'Start your day! You have pending tasks.', label: 'Send morning reminder' }, schedule: { type: 'daily', value: '1', label: 'Repeat daily' } },
+        { name: '🤖 AI Urgency Triage', trigger: { type: 'event', value: 'task_created', label: 'When a new task is created' }, condition: { type: 'ai_urgency', operator: '==', value: 'high', label: 'AI Detects High Urgency' }, action: { type: 'slack_msg', value: '#urgent-tasks', label: 'Alert Slack Channel' }, schedule: { type: 'instant', value: '0', label: 'Execute immediately' } },
+        { name: '📊 Weekly Review', trigger: { type: 'time', value: '18:00', label: 'Every Friday at 6:00 PM' }, condition: { type: 'always', operator: '==', value: 'true', label: 'Always execute' }, action: { type: 'create_task', value: 'Weekly productivity review', label: 'Create review task' }, schedule: { type: 'weekly', value: 'friday', label: 'Repeat weekly (Friday)' } },
+        { name: '🔴 High Priority Alert', trigger: { type: 'event', value: 'task_created', label: 'When a new task is created' }, condition: { type: 'priority_high', operator: '==', value: 'high', label: 'If priority is High' }, action: { type: 'notification', value: '🚨 High priority task needs attention!', label: 'Send urgent alert' }, schedule: { type: 'instant', value: '0', label: 'Execute immediately' } },
+        { name: '🧹 End-of-Day Cleanup', trigger: { type: 'time', value: '21:00', label: 'Every day at 9:00 PM' }, condition: { type: 'tasks_pending', operator: '>', value: '3', label: 'If pending tasks > 3' }, action: { type: 'ai_summarize', value: 'End of day summary', label: 'AI Summarize remaining work' }, schedule: { type: 'daily', value: '1', label: 'Repeat daily' } }
+    ];
+
+    const triggerOptions = [
+        { type: 'time', label: '⏰ Time-based', desc: 'Run at a specific time' },
+        { type: 'event', label: '🔔 Event-based', desc: 'Run when a task is created/updated' },
+        { type: 'interval', label: '🔄 Interval', desc: 'Run every X minutes/hours' },
+        { type: 'webhook', label: '🪝 Webhook', desc: 'Trigger from external app (Zapier/GitHub)' },
+        { type: 'ai_anomaly', label: '🤖 AI Anomaly', desc: 'Trigger if AI detects unusual activity' }
+    ];
+    const conditionOptions = [
+        { type: 'tasks_pending', label: '📋 Tasks Pending', desc: 'Check pending task count' },
+        { type: 'priority_high', label: '🔴 High Priority Exists', desc: 'Check for high priority items' },
+        { type: 'ai_urgency', label: '🧠 AI Urgency Check', desc: 'AI analyzes text for implicit urgency' },
+        { type: 'ai_context', label: '🎯 Smart Context', desc: 'AI checks if condition matches context' },
+        { type: 'always', label: '✅ Always', desc: 'No condition, always execute' }
+    ];
+    const actionOptions = [
+        { type: 'notification', label: '🔔 Send Notification', desc: 'Show a reminder alert' },
+        { type: 'create_task', label: '📝 Create Task', desc: 'Auto-create a new task' },
+        { type: 'email', label: '📧 Send Email', desc: 'Send an email summary' },
+        { type: 'slack_msg', label: '💬 Send to Slack/Discord', desc: 'Post message to a channel' },
+        { type: 'ai_summarize', label: '✨ AI Summarize', desc: 'Generate AI summary of pending work' },
+        { type: 'ai_auto_reply', label: '🤖 AI Auto-Draft', desc: 'Draft response or next steps using AI' },
+        { type: 'http_request', label: '🌐 HTTP Request', desc: 'Call external API (GET/POST)' }
+    ];
+    const scheduleOptions = [
+        { type: 'instant', label: '⚡ Instant', desc: 'Execute once immediately' },
+        { type: 'daily', label: '📅 Daily', desc: 'Repeat every day' },
+        { type: 'weekly', label: '📆 Weekly', desc: 'Repeat every week' },
+        { type: 'custom', label: '⚙️ Custom Cron', desc: 'Advanced cron schedule' },
+        { type: 'smart_delay', label: '🧠 Smart Delay', desc: 'AI waits for optimal time' }
+    ];
 
     const workflowTemplates = [
         {
@@ -2284,7 +2339,7 @@ function Workflow({ refreshTrigger, onRefresh }) {
     ];
 
     const loadWorkflows = () => {
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/workflow/history/all')
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/workflow/history/all')
             .then(res => res.json())
             .then(data => {
                 setWorkflows((data || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
@@ -2297,8 +2352,18 @@ function Workflow({ refreshTrigger, onRefresh }) {
             });
     };
 
+    const loadAutomations = () => {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/automations')
+            .then(res => res.json())
+            .then(data => {
+                if(Array.isArray(data)) setAutomations(data);
+            })
+            .catch(err => console.error('Error loading automations:', err));
+    };
+
     useEffect(() => {
         loadWorkflows();
+        loadAutomations();
     }, [refreshTrigger]);
 
     const handleExecuteWorkflow = () => {
@@ -2310,7 +2375,7 @@ function Workflow({ refreshTrigger, onRefresh }) {
         setExecuting(true);
         const fullRequest = `[${formData.workflowType.toUpperCase()}] ${formData.description}`;
         
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/workflow', {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/workflow', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -2336,188 +2401,678 @@ function Workflow({ refreshTrigger, onRefresh }) {
         ? workflows 
         : workflows.filter(w => w.status === filterStatus);
 
-    if (loading) return React.createElement('div', { className: 'container' }, React.createElement('p', { style: { textAlign: 'center', color: '#999' } }, 'Loading workflows...'));
+    const handleSaveAutomation = () => {
+        if (!currentAutomation.name.trim()) { alert('Please enter an automation name'); return; }
+        
+        const method = currentAutomation.id ? 'PUT' : 'POST';
+        const url = currentAutomation.id ? `https://genai-backend-1013063132017.us-central1.run.app/api/automations/${currentAutomation.id}` : 'https://genai-backend-1013063132017.us-central1.run.app/api/automations';
+        
+        fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(currentAutomation)
+        })
+        .then(res => res.json())
+        .then(data => {
+            loadAutomations();
+            setShowCreateModal(false);
+            setCurrentAutomation({ id: null, name: '', enabled: true, trigger: { type: 'time', value: '09:00', label: 'Every day at 9:00 AM' }, condition: { type: 'tasks_pending', operator: '>', value: '0', label: 'If pending tasks > 0' }, action: { type: 'notification', value: 'Complete your pending tasks!', label: 'Send notification reminder' }, schedule: { type: 'daily', value: '1', label: 'Repeat daily' } });
+            setEditingNode(null);
+        })
+        .catch(err => alert('Error saving automation'));
+    };
+
+    const handleDeleteAutomation = (id) => {
+        if (confirm('Delete this automation?')) {
+            fetch(`https://genai-backend-1013063132017.us-central1.run.app/api/automations/${id}`, { method: 'DELETE' })
+            .then(() => loadAutomations());
+        }
+    };
+    
+    const handleToggleAutomation = (id) => {
+        const auto = automations.find(a => a.id === id);
+        if(!auto) return;
+        fetch(`https://genai-backend-1013063132017.us-central1.run.app/api/automations/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...auto, enabled: !auto.enabled })
+        })
+        .then(() => loadAutomations());
+    };
+    const handleLoadPreset = (preset) => { setCurrentAutomation({ ...preset, id: null, enabled: true }); setShowCreateModal(true); };
+    const handleEditAutomation = (auto) => { setCurrentAutomation(auto); setShowCreateModal(true); };
+
+    // Node builder helper
+    const makeNode = (nodeType, icon, color, title, label, isLast) => {
+        return React.createElement(React.Fragment, { key: nodeType },
+            React.createElement('div', {
+                onClick: () => setEditingNode(editingNode === nodeType ? null : nodeType),
+                style: { flex: 1, minWidth: '160px', padding: '20px', backgroundColor: editingNode === nodeType ? 'rgba(99, 102, 241, 0.12)' : 'var(--bg-card)', borderRadius: '14px', border: editingNode === nodeType ? '2px solid ' + color : '1px solid var(--border-subtle)', cursor: 'pointer', transition: 'all 0.3s', position: 'relative', textAlign: 'center' }
+            },
+                React.createElement('div', { style: { width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, ' + color + '22, ' + color + '44)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: '24px' } }, icon),
+                React.createElement('h4', { style: { margin: '0 0 6px 0', color: color, fontSize: '11px', fontWeight: '700', letterSpacing: '1.5px', textTransform: 'uppercase' } }, title),
+                React.createElement('p', { style: { margin: '0', color: 'var(--text-primary)', fontSize: '13px', fontWeight: '500' } }, label),
+                React.createElement('p', { style: { margin: '6px 0 0', color: 'var(--text-tertiary)', fontSize: '11px' } }, '✎ Click to edit')
+            ),
+            !isLast && React.createElement('div', { style: { display: 'flex', alignItems: 'center', padding: '0 4px', color: '#6366f1', fontSize: '20px', flexShrink: 0 } },
+                React.createElement('div', { style: { width: '40px', height: '2px', background: 'linear-gradient(90deg, ' + color + ', #6366f1)', position: 'relative' } },
+                    React.createElement('div', { style: { position: 'absolute', right: '-6px', top: '-4px', width: '0', height: '0', borderTop: '5px solid transparent', borderBottom: '5px solid transparent', borderLeft: '8px solid #6366f1' } })
+                )
+            )
+        );
+    };
+
+    // Node editor panel
+    const makeNodeEditor = (nodeType, options, currentVal, onSelect) => {
+        if (editingNode !== nodeType) return null;
+        return React.createElement('div', { style: { padding: '20px', backgroundColor: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border-accent)', marginTop: '16px', animation: 'slideUp 0.3s ease-out' } },
+            React.createElement('h4', { style: { margin: '0 0 14px 0', color: '#818cf8', fontSize: '13px', fontWeight: '600' } }, '⚙️ Configure ' + nodeType.charAt(0).toUpperCase() + nodeType.slice(1)),
+            React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' } },
+                options.map(opt => React.createElement('div', { key: opt.type, onClick: () => {
+                    const updated = { ...currentAutomation };
+                    updated[nodeType] = { ...updated[nodeType], type: opt.type, label: opt.label + ' — ' + opt.desc };
+                    setCurrentAutomation(updated);
+                }, style: { padding: '14px', backgroundColor: currentVal.type === opt.type ? 'rgba(99, 102, 241, 0.15)' : 'var(--bg-glass)', border: currentVal.type === opt.type ? '2px solid #6366f1' : '1px solid var(--border-subtle)', borderRadius: '10px', cursor: 'pointer', transition: 'all 0.2s' } },
+                    React.createElement('h5', { style: { margin: '0 0 4px 0', color: 'var(--text-primary)', fontSize: '13px' } }, opt.label),
+                    React.createElement('p', { style: { margin: '0', color: 'var(--text-secondary)', fontSize: '11px' } }, opt.desc)
+                ))
+            ),
+            nodeType === 'trigger' && currentAutomation.trigger.type === 'time' && React.createElement('div', { style: { marginTop: '12px' } },
+                React.createElement('label', { style: { color: 'var(--text-secondary)', fontSize: '12px', display: 'block', marginBottom: '6px' } }, 'Time:'),
+                React.createElement('input', { type: 'time', value: currentAutomation.trigger.value, onChange: (e) => setCurrentAutomation({ ...currentAutomation, trigger: { ...currentAutomation.trigger, value: e.target.value, label: 'Every day at ' + e.target.value } }), style: { padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-default)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: '14px' } })
+            ),
+            nodeType === 'action' && React.createElement('div', { style: { marginTop: '12px' } },
+                React.createElement('label', { style: { color: 'var(--text-secondary)', fontSize: '12px', display: 'block', marginBottom: '6px' } }, 'Message / Value:'),
+                React.createElement('input', { type: 'text', value: currentAutomation.action.value, onChange: (e) => setCurrentAutomation({ ...currentAutomation, action: { ...currentAutomation.action, value: e.target.value } }), placeholder: 'Enter action value...', style: { width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-default)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: '14px', boxSizing: 'border-box' } })
+            )
+        );
+    };
+
+    if (loading) return React.createElement('div', { className: 'container' }, React.createElement('p', { style: { textAlign: 'center', color: '#6b6b80' } }, 'Loading...'));
 
     return React.createElement('div', { className: 'container' },
         // Header
-        React.createElement('div', { style: { marginBottom: '30px' } },
+        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' } },
             React.createElement('div', null,
-                React.createElement('h2', { style: { margin: '0 0 8px 0', color: '#1f2937', fontSize: '24px', fontWeight: '700' } }, '🤖 Multi-Agent Workflows'),
-                React.createElement('p', { style: { margin: '0 0 20px 0', color: '#9ca3af', fontSize: '13px' } }, 'Coordinate multiple AI agents to accomplish complex tasks')
-            )
+                React.createElement('h2', { style: { margin: '0 0 6px 0', color: '#f0f0f5', fontSize: '24px', fontWeight: '700' } }, '⚡ Task Automation'),
+                React.createElement('p', { style: { margin: '0', color: '#6b6b80', fontSize: '13px' } }, 'Build visual automation pipelines — Trigger → Condition → Action')
+            ),
+            React.createElement('button', { onClick: () => { setCurrentAutomation({ id: null, name: '', enabled: true, trigger: { type: 'time', value: '09:00', label: 'Every day at 9:00 AM' }, condition: { type: 'tasks_pending', operator: '>', value: '0', label: 'If pending tasks > 0' }, action: { type: 'notification', value: 'Complete your pending tasks!', label: 'Send notification reminder' }, schedule: { type: 'daily', value: '1', label: 'Repeat daily' } }); setShowCreateModal(true); setEditingNode(null); }, style: { padding: '10px 20px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' } }, '➕ Create Automation')
         ),
 
-        // Workflow Templates
-        React.createElement('div', { style: { marginBottom: '30px', padding: '24px', backgroundColor: '#f0f4ff', borderRadius: '12px', border: '1px solid #bfdbfe' } },
-            React.createElement('h3', { style: { margin: '0 0 20px 0', color: '#1f2937', fontSize: '15px', fontWeight: '700', letterSpacing: '0.5px' } }, '✨ Choose Workflow Template'),
-            React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px' } },
-                workflowTemplates.map(template => React.createElement('div', { key: template.type, style: {
-                    padding: '18px',
-                    border: formData.workflowType === template.type ? '2px solid #8b5cf6' : '1px solid #d1d5db',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                    backgroundColor: formData.workflowType === template.type ? 'white' : '#ffffff',
-                    transition: 'all 0.2s',
-                    boxShadow: formData.workflowType === template.type ? '0 4px 12px rgba(139, 92, 246, 0.2)' : '0 1px 2px rgba(0,0,0,0.05)'
-                }, onClick: () => setFormData({ ...formData, workflowType: template.type }),
-                onMouseEnter: (e) => {
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.1)';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                },
-                onMouseLeave: (e) => {
-                    e.currentTarget.style.boxShadow = formData.workflowType === template.type ? '0 4px 12px rgba(139, 92, 246, 0.2)' : '0 1px 2px rgba(0,0,0,0.05)';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                }},
-                    React.createElement('span', { style: { fontSize: '28px', display: 'block', marginBottom: '12px' } }, template.icon),
-                    React.createElement('h4', { style: { margin: '0 0 8px 0', color: '#1f2937', fontSize: '14px', fontWeight: '600' } }, template.name),
-                    React.createElement('p', { style: { margin: '0 0 10px 0', color: '#666', fontSize: '12px', lineHeight: '1.4' } }, template.description),
-                    React.createElement('p', { style: { margin: '0', color: '#9ca3af', fontSize: '11px', fontStyle: 'italic' } }, '💡 ' + template.example)
+        // Tab Switcher
+        React.createElement('div', { style: { display: 'flex', gap: '4px', marginBottom: '24px', padding: '4px', backgroundColor: 'rgba(20, 20, 32, 0.6)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' } },
+            ['builder', 'history', 'ai'].map(v => React.createElement('button', { key: v, onClick: () => setActiveView(v), style: { flex: 1, padding: '10px 16px', backgroundColor: activeView === v ? 'rgba(99,102,241,0.15)' : 'transparent', border: activeView === v ? '1px solid rgba(99,102,241,0.3)' : '1px solid transparent', borderRadius: '8px', color: activeView === v ? '#818cf8' : '#6b6b80', fontSize: '13px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' } }, v === 'builder' ? '🔧 Automations' : v === 'history' ? '📜 Execution History' : '🤖 AI Workflows'))
+        ),
+
+        // ========== BUILDER VIEW ==========
+        activeView === 'builder' && React.createElement('div', null,
+            // Preset Templates
+            React.createElement('div', { style: { marginBottom: '28px' } },
+                React.createElement('h3', { style: { margin: '0 0 14px 0', color: '#f0f0f5', fontSize: '14px', fontWeight: '700', letterSpacing: '0.5px' } }, '🚀 Quick Start Templates'),
+                React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' } },
+                    presetAutomations.map((preset, i) => React.createElement('div', { key: i, onClick: () => handleLoadPreset(preset), style: { padding: '16px', backgroundColor: 'rgba(20, 20, 32, 0.75)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)', cursor: 'pointer', transition: 'all 0.25s' }, onMouseEnter: e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.3)'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.4)'; }, onMouseLeave: e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; } },
+                        React.createElement('h4', { style: { margin: '0 0 8px 0', color: '#f0f0f5', fontSize: '14px', fontWeight: '600' } }, preset.name),
+                        React.createElement('p', { style: { margin: '0 0 4px 0', color: '#a0a0b8', fontSize: '11px' } }, preset.trigger.label),
+                        React.createElement('p', { style: { margin: '0', color: '#6b6b80', fontSize: '11px' } }, '→ ' + preset.action.label),
+                        React.createElement('span', { style: { display: 'inline-block', marginTop: '8px', padding: '3px 10px', backgroundColor: 'rgba(99,102,241,0.1)', color: '#818cf8', borderRadius: '20px', fontSize: '10px', fontWeight: '600' } }, '+ Use Template')
+                    ))
+                )
+            ),
+
+            // Saved Automations List
+            React.createElement('div', { style: { marginBottom: '28px' } },
+                React.createElement('h3', { style: { margin: '0 0 14px 0', color: '#f0f0f5', fontSize: '14px', fontWeight: '700' } }, '📋 My Automations (' + automations.length + ')'),
+                automations.length === 0 && React.createElement('div', { style: { textAlign: 'center', padding: '40px', backgroundColor: 'rgba(20, 20, 32, 0.5)', borderRadius: '12px', border: '2px dashed rgba(255,255,255,0.08)' } },
+                    React.createElement('p', { style: { fontSize: '36px', margin: '0 0 8px' } }, '⚡'),
+                    React.createElement('p', { style: { color: '#6b6b80', fontSize: '13px' } }, 'No automations yet. Create one or use a template!')
+                ),
+                automations.map(auto => React.createElement('div', { key: auto.id, style: { padding: '18px', marginBottom: '10px', backgroundColor: 'rgba(20, 20, 32, 0.75)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)', borderLeft: '4px solid ' + (auto.enabled ? '#10b981' : '#6b6b80'), transition: 'all 0.2s', opacity: auto.enabled ? 1 : 0.6 } },
+                    React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+                        React.createElement('div', { style: { flex: 1 } },
+                            React.createElement('h4', { style: { margin: '0 0 6px 0', color: '#f0f0f5', fontSize: '14px', fontWeight: '600' } }, auto.name),
+                            React.createElement('div', { style: { display: 'flex', gap: '6px', flexWrap: 'wrap', fontSize: '11px' } },
+                                React.createElement('span', { style: { padding: '3px 8px', backgroundColor: 'rgba(251,191,36,0.1)', color: '#fbbf24', borderRadius: '6px' } }, '⏰ ' + auto.trigger.label),
+                                React.createElement('span', { style: { color: '#6b6b80' } }, '→'),
+                                React.createElement('span', { style: { padding: '3px 8px', backgroundColor: 'rgba(56,189,248,0.1)', color: '#38bdf8', borderRadius: '6px' } }, '🔍 ' + auto.condition.label),
+                                React.createElement('span', { style: { color: '#6b6b80' } }, '→'),
+                                React.createElement('span', { style: { padding: '3px 8px', backgroundColor: 'rgba(52,211,153,0.1)', color: '#34d399', borderRadius: '6px' } }, '🚀 ' + auto.action.label)
+                            )
+                        ),
+                        React.createElement('div', { style: { display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0, marginLeft: '12px' } },
+                            React.createElement('button', { onClick: () => handleToggleAutomation(auto.id), style: { width: '44px', height: '24px', borderRadius: '12px', border: 'none', backgroundColor: auto.enabled ? '#10b981' : 'rgba(255,255,255,0.1)', cursor: 'pointer', position: 'relative', transition: 'all 0.3s' } },
+                                React.createElement('div', { style: { width: '18px', height: '18px', borderRadius: '50%', backgroundColor: 'white', position: 'absolute', top: '3px', left: auto.enabled ? '23px' : '3px', transition: 'left 0.3s' } })
+                            ),
+                            React.createElement('button', { onClick: () => handleEditAutomation(auto), style: { padding: '6px 10px', backgroundColor: 'rgba(56,189,248,0.12)', color: '#38bdf8', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: '600' } }, '✏️'),
+                            React.createElement('button', { onClick: () => handleDeleteAutomation(auto.id), style: { padding: '6px 10px', backgroundColor: 'rgba(248,113,113,0.12)', color: '#f87171', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: '600' } }, '✕')
+                        )
+                    )
                 ))
             )
         ),
 
-        // Workflow Execution Form
-        React.createElement('div', { style: {
-            backgroundColor: '#f5f5f5',
-            padding: '20px',
-            borderRadius: '8px',
-            marginBottom: '30px',
-            border: '1px solid #ddd'
-        }},
-            React.createElement('h3', { style: { marginTop: 0 } }, '▶ Execute Workflow'),
-            React.createElement('p', { style: { color: '#666', fontSize: '14px', marginBottom: '15px' } }, 'Describe the task you want the multi-agent system to accomplish. Agents will coordinate intelligently to complete it.'),
-            React.createElement('textarea', {
-                placeholder: 'Describe your task in detail. Be specific about what you want to accomplish...',
-                value: formData.description,
-                onChange: (e) => setFormData({ ...formData, description: e.target.value }),
-                style: {
-                    display: 'block',
-                    width: '100%',
-                    padding: '12px',
-                    marginBottom: '15px',
-                    border: '1px solid #ccc',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                    minHeight: '100px',
-                    fontFamily: 'inherit',
-                    boxSizing: 'border-box'
-                }
-            }),
-            React.createElement('div', { style: { display: 'flex', gap: '10px', justifyContent: 'space-between', alignItems: 'center' } },
-                React.createElement('span', { style: { fontSize: '12px', color: '#999' } }, 
-                    'Selected: ' + workflowTemplates.find(t => t.type === formData.workflowType).name
-                ),
-                React.createElement('button', {
-                    onClick: handleExecuteWorkflow,
-                    disabled: executing || !formData.description.trim(),
-                    style: {
-                        padding: '12px 25px',
-                        backgroundColor: executing || !formData.description.trim() ? '#ccc' : '#6366f1',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: executing ? 'not-allowed' : 'pointer',
-                        fontWeight: '600',
-                        fontSize: '14px',
-                        transition: 'all 0.3s'
-                    }
-                }, executing ? '⟳ Executing...' : '▶ Start Workflow')
-            )
-        ),
-
-        // Workflow History
-        React.createElement('div', null,
-            React.createElement('h3', null, 'Execution History'),
-            workflows.length === 0 && React.createElement('p', { style: { textAlign: 'center', color: '#999', padding: '30px' } }, 'No workflow executions yet. Create one to get started!'),
-
-            workflows.map(workflow => React.createElement('div', { key: workflow.id, style: {
-                backgroundColor: 'white',
-                padding: '18px',
-                marginBottom: '15px',
-                borderRadius: '8px',
-                border: '1px solid #ddd',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                borderLeft: '5px solid ' + (
-                    workflow.status === 'completed' ? '#10b981' :
-                    workflow.status === 'failed' ? '#ef4444' : '#f59e0b'
-                )
-            }, onClick: () => setSelectedWorkflow(selectedWorkflow === workflow.id ? null : workflow.id) },
-                React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '15px' } },
+        // ========== HISTORY VIEW ==========
+        activeView === 'history' && React.createElement('div', null,
+            React.createElement('h3', { style: { margin: '0 0 16px 0', color: '#f0f0f5' } }, '📜 Execution History'),
+            workflows.length === 0 && React.createElement('p', { style: { textAlign: 'center', color: '#6b6b80', padding: '30px' } }, 'No workflow executions yet.'),
+            workflows.map(workflow => React.createElement('div', { key: workflow.id, style: { backgroundColor: 'rgba(20, 20, 32, 0.75)', padding: '18px', marginBottom: '12px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', borderLeft: '4px solid ' + (workflow.status === 'completed' ? '#10b981' : workflow.status === 'failed' ? '#ef4444' : '#f59e0b'), cursor: 'pointer', transition: 'all 0.2s' }, onClick: () => setSelectedWorkflow(selectedWorkflow === workflow.id ? null : workflow.id) },
+                React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '12px' } },
                     React.createElement('div', { style: { flex: 1 } },
-                        React.createElement('h4', { style: { margin: '0 0 8px 0', color: '#333', wordBreak: 'break-word' } }, 
-                            workflow.user_request || workflow.request || 'Workflow ' + workflow.id
-                        ),
-                        React.createElement('p', { style: { margin: '0 0 10px 0', color: '#666', fontSize: '13px' } }, 
-                            '📅 ' + new Date(workflow.created_at).toLocaleString()
-                        ),
-                        selectedWorkflow === workflow.id && workflow.result && React.createElement('div', { style: {
-                            marginTop: '12px',
-                            padding: '12px',
-                            backgroundColor: '#f9fafb',
-                            borderRadius: '6px',
-                            borderLeft: '3px solid #6366f1',
-                            fontSize: '13px',
-                            color: '#555',
-                            maxHeight: '200px',
-                            overflowY: 'auto'
-                        }},
+                        React.createElement('h4', { style: { margin: '0 0 6px', color: '#f0f0f5', fontSize: '14px', wordBreak: 'break-word' } }, workflow.user_request || workflow.request || 'Workflow ' + workflow.id),
+                        React.createElement('p', { style: { margin: '0', color: '#6b6b80', fontSize: '12px' } }, '📅 ' + new Date(workflow.created_at).toLocaleString()),
+                        selectedWorkflow === workflow.id && workflow.result && React.createElement('div', { style: { marginTop: '12px', padding: '12px', backgroundColor: 'rgba(20, 20, 32, 0.5)', borderRadius: '8px', borderLeft: '3px solid #6366f1', fontSize: '13px', color: '#a0a0b8', maxHeight: '200px', overflowY: 'auto' } },
                             React.createElement('strong', null, 'Result:'),
-                            React.createElement('p', { style: { margin: '8px 0 0 0', whiteSpace: 'pre-wrap', wordBreak: 'break-word' } }, workflow.result)
+                            React.createElement('p', { style: { margin: '8px 0 0', whiteSpace: 'pre-wrap', wordBreak: 'break-word' } }, workflow.result)
                         )
                     ),
-                    React.createElement('span', { style: {
-                        backgroundColor: workflow.status === 'completed' ? '#dbeafe' : workflow.status === 'failed' ? '#fee2e2' : '#fef3c7',
-                        color: workflow.status === 'completed' ? '#0c4a6e' : workflow.status === 'failed' ? '#991b1b' : '#92400e',
-                        padding: '8px 14px',
-                        borderRadius: '20px',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        whiteSpace: 'nowrap'
-                    }}, 
-                        (workflow.status === 'completed' ? '✓' : workflow.status === 'failed' ? '✕' : '⟳') + ' ' + workflow.status
-                    )
-                ),
-                selectedWorkflow === workflow.id && workflow.completed_at && React.createElement('p', { style: {
-                    margin: '12px 0 0 0',
-                    padding: '10px',
-                    backgroundColor: '#f0f0f0',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    color: '#666'
-                }},
-                    '⏱ Completed: ' + new Date(workflow.completed_at).toLocaleString()
+                    React.createElement('span', { style: { padding: '6px 12px', backgroundColor: workflow.status === 'completed' ? 'rgba(52,211,153,0.12)' : workflow.status === 'failed' ? 'rgba(248,113,113,0.12)' : 'rgba(251,191,36,0.12)', color: workflow.status === 'completed' ? '#34d399' : workflow.status === 'failed' ? '#f87171' : '#fbbf24', borderRadius: '20px', fontSize: '11px', fontWeight: '600', whiteSpace: 'nowrap' } }, (workflow.status === 'completed' ? '✓' : workflow.status === 'failed' ? '✕' : '⟳') + ' ' + workflow.status)
                 )
             ))
         ),
 
-        // How to Use
-        React.createElement('div', { style: {
-            marginTop: '40px',
-            padding: '20px',
-            backgroundColor: '#f0fdf4',
-            borderRadius: '8px',
-            border: '1px solid #86efac'
-        }},
-            React.createElement('h3', { style: { margin: '0 0 15px 0', color: '#166534' } }, '💡 How to Use Multi-Agent Workflows'),
-            React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '14px' } },
-                React.createElement('div', null,
-                    React.createElement('p', { style: { margin: '0 0 10px 0', fontWeight: 'bold' } }, '1️⃣ Choose a Template'),
-                    React.createElement('p', { style: { margin: '0', color: '#666' } }, 'Select the workflow type that best fits your task.')
-                ),
-                React.createElement('div', null,
-                    React.createElement('p', { style: { margin: '0 0 10px 0', fontWeight: 'bold' } }, '2️⃣ Describe Your Task'),
-                    React.createElement('p', { style: { margin: '0', color: '#666' } }, 'Write a clear description of what you want accomplished.')
-                ),
-                React.createElement('div', null,
-                    React.createElement('p', { style: { margin: '0 0 10px 0', fontWeight: 'bold' } }, '3️⃣ Execute Workflow'),
-                    React.createElement('p', { style: { margin: '0', color: '#666' } }, 'Click "Start Workflow" and let AI agents coordinate.')
-                ),
-                React.createElement('div', null,
-                    React.createElement('p', { style: { margin: '0 0 10px 0', fontWeight: 'bold' } }, '4️⃣ View Results'),
-                    React.createElement('p', { style: { margin: '0', color: '#666' } }, 'Check the history to see execution status and results.')
+        // ========== AI WORKFLOW VIEW ==========
+        activeView === 'ai' && React.createElement('div', null,
+            React.createElement('div', { style: { marginBottom: '24px', padding: '24px', backgroundColor: 'rgba(99, 102, 241, 0.08)', borderRadius: '12px', border: '1px solid rgba(99,102,241,0.2)' } },
+                React.createElement('h3', { style: { margin: '0 0 14px 0', color: '#f0f0f5', fontSize: '15px', fontWeight: '700' } }, '🤖 AI Multi-Agent Workflow'),
+                React.createElement('p', { style: { color: '#a0a0b8', fontSize: '13px', marginBottom: '16px' } }, 'Describe a task and let AI agents coordinate to complete it.'),
+                React.createElement('textarea', { placeholder: 'Describe your task in detail...', value: formData.description, onChange: (e) => setFormData({ ...formData, description: e.target.value }), style: { display: 'block', width: '100%', padding: '12px', marginBottom: '14px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '14px', minHeight: '100px', fontFamily: 'inherit', boxSizing: 'border-box', backgroundColor: 'rgba(255,255,255,0.04)', color: '#f0f0f5' } }),
+                React.createElement('div', { style: { display: 'flex', justifyContent: 'flex-end' } },
+                    React.createElement('button', { onClick: handleExecuteWorkflow, disabled: executing || !formData.description.trim(), style: { padding: '12px 25px', background: executing || !formData.description.trim() ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white', border: 'none', borderRadius: '8px', cursor: executing ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '14px' } }, executing ? '⟳ Executing...' : '▶ Start Workflow')
                 )
             )
+        ),
+
+        // ========== CREATE/EDIT MODAL ==========
+        showCreateModal && React.createElement('div', { style: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, backdropFilter: 'blur(8px)' }, onClick: (e) => { if (e.target === e.currentTarget) { setShowCreateModal(false); setEditingNode(null); } } },
+            React.createElement('div', { style: { backgroundColor: 'var(--bg-secondary)', borderRadius: '20px', padding: '32px', maxWidth: '800px', width: '95%', maxHeight: '85vh', overflowY: 'auto', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-lg)' } },
+                // Modal Header
+                React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' } },
+                    React.createElement('h2', { style: { margin: 0, color: 'var(--text-primary)', fontSize: '20px' } }, currentAutomation.id ? '✏️ Edit Automation' : '⚡ New Automation'),
+                    React.createElement('button', { onClick: () => { setShowCreateModal(false); setEditingNode(null); }, style: { background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '24px', cursor: 'pointer' } }, '✕')
+                ),
+                // Name Input
+                React.createElement('div', { style: { marginBottom: '24px' } },
+                    React.createElement('label', { style: { color: 'var(--text-secondary)', fontSize: '12px', fontWeight: '600', display: 'block', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase' } }, 'Automation Name'),
+                    React.createElement('input', { type: 'text', value: currentAutomation.name, onChange: (e) => setCurrentAutomation({ ...currentAutomation, name: e.target.value }), placeholder: 'e.g., Morning Task Reminder', style: { width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--border-default)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: '15px', boxSizing: 'border-box', fontFamily: 'inherit' } })
+                ),
+                // Visual Pipeline
+                React.createElement('div', { style: { marginBottom: '20px' } },
+                    React.createElement('label', { style: { color: 'var(--text-secondary)', fontSize: '12px', fontWeight: '600', display: 'block', marginBottom: '14px', letterSpacing: '1px', textTransform: 'uppercase' } }, 'Automation Pipeline'),
+                    React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '0', overflowX: 'auto', padding: '8px 0' } },
+                        makeNode('trigger', '⏰', '#fbbf24', 'TRIGGER', currentAutomation.trigger.label, false),
+                        makeNode('condition', '🔍', '#38bdf8', 'CONDITION', currentAutomation.condition.label, false),
+                        makeNode('action', '🚀', '#34d399', 'ACTION', currentAutomation.action.label, false),
+                        makeNode('schedule', '🔁', '#a78bfa', 'SCHEDULE', currentAutomation.schedule.label, true)
+                    )
+                ),
+                // Node Editor (shown when a node is clicked)
+                makeNodeEditor('trigger', triggerOptions, currentAutomation.trigger),
+                makeNodeEditor('condition', conditionOptions, currentAutomation.condition),
+                makeNodeEditor('action', actionOptions, currentAutomation.action),
+                makeNodeEditor('schedule', scheduleOptions, currentAutomation.schedule),
+                // Save Button
+                React.createElement('div', { style: { display: 'flex', gap: '10px', marginTop: '24px' } },
+                    React.createElement('button', { onClick: () => { setShowCreateModal(false); setEditingNode(null); }, style: { flex: 1, padding: '12px', backgroundColor: 'var(--bg-glass)', color: 'var(--text-secondary)', border: '1px solid var(--border-default)', borderRadius: '10px', cursor: 'pointer', fontWeight: '600', fontSize: '14px' } }, 'Cancel'),
+                    React.createElement('button', { onClick: handleSaveAutomation, style: { flex: 2, padding: '12px', background: 'var(--gradient-primary)', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: '600', fontSize: '14px' } }, currentAutomation.id ? '💾 Update Automation' : '⚡ Save Automation')
+                )
+            )
+        )
+    );
+}
+
+
+// ====== DATA ANALYSIS COMPONENT ======
+function DataAnalysis({ refreshTrigger, onRefresh }) {
+    const [tasks, setTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [chartType, setChartType] = useState('bar');
+    const [analysisType, setAnalysisType] = useState('overview');
+    const [aiInsights, setAiInsights] = useState([]);
+    const [insightsLoading, setInsightsLoading] = useState(false);
+    const [uploadedData, setUploadedData] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortField, setSortField] = useState('created_at');
+    const [sortDir, setSortDir] = useState('desc');
+    const [dateRange, setDateRange] = useState('all');
+    const [categoryFilter, setCategoryFilter] = useState('all');
+    const chartRefs = { bar: useRef(null), line: useRef(null), pie: useRef(null), donut: useRef(null) };
+    const chartInstances = useRef({});
+
+    useEffect(() => {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks')
+            .then(r => r.json()).then(data => { setTasks(data || []); setLoading(false); })
+            .catch(() => { setTasks([]); setLoading(false); });
+    }, [refreshTrigger]);
+
+    // Computed analytics
+    const analytics = useMemo(() => {
+        if (!tasks.length) return { total: 0, completed: 0, pending: 0, efficiency: 0, byCategory: {}, byPriority: {}, byDay: {}, byStatus: {} };
+        const completed = tasks.filter(t => t.status === 'completed').length;
+        const pending = tasks.filter(t => t.status !== 'completed').length;
+        const byCategory = {}; const byPriority = { high: 0, medium: 0, low: 0 }; const byDay = {}; const byStatus = {};
+        tasks.forEach(t => {
+            const cat = t.category || 'uncategorized'; byCategory[cat] = (byCategory[cat] || 0) + 1;
+            const pri = t.priority || 'medium'; byPriority[pri] = (byPriority[pri] || 0) + 1;
+            const day = new Date(t.created_at).toLocaleDateString('en-US', { weekday: 'short' }); byDay[day] = (byDay[day] || 0) + 1;
+            const st = t.status || 'pending'; byStatus[st] = (byStatus[st] || 0) + 1;
+        });
+        return { total: tasks.length, completed, pending, efficiency: tasks.length ? Math.round((completed / tasks.length) * 100) : 0, byCategory, byPriority, byDay, byStatus };
+    }, [tasks]);
+
+    // Chart rendering
+    useEffect(() => {
+        if (loading || !window.Chart) return;
+        Object.values(chartInstances.current).forEach(c => { try { c.destroy(); } catch(e){} });
+        chartInstances.current = {};
+        const darkGrid = { color: 'rgba(255,255,255,0.06)' };
+        const darkTick = { color: '#6b6b80' };
+        const colors = ['#6366f1','#8b5cf6','#ec4899','#f59e0b','#10b981','#06b6d4','#f87171','#34d399'];
+
+        // Bar Chart
+        if (chartRefs.bar.current) {
+            const ctx = chartRefs.bar.current.getContext('2d');
+            const labels = Object.keys(analytics.byCategory);
+            chartInstances.current.bar = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Tasks by Category', data: labels.map(l => analytics.byCategory[l]), backgroundColor: colors.slice(0, labels.length).map(c => c + '88'), borderColor: colors.slice(0, labels.length), borderWidth: 2, borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#a0a0b8' } } }, scales: { x: { grid: darkGrid, ticks: darkTick }, y: { grid: darkGrid, ticks: darkTick, beginAtZero: true } } } });
+        }
+        // Line Chart
+        if (chartRefs.line.current) {
+            const ctx = chartRefs.line.current.getContext('2d');
+            const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+            chartInstances.current.line = new Chart(ctx, { type: 'line', data: { labels: days, datasets: [{ label: 'Tasks Created', data: days.map(d => analytics.byDay[d] || 0), borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', fill: true, tension: 0.4, pointBackgroundColor: '#8b5cf6', pointRadius: 5 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#a0a0b8' } } }, scales: { x: { grid: darkGrid, ticks: darkTick }, y: { grid: darkGrid, ticks: darkTick, beginAtZero: true } } } });
+        }
+        // Pie Chart
+        if (chartRefs.pie.current) {
+            const ctx = chartRefs.pie.current.getContext('2d');
+            const labels = Object.keys(analytics.byPriority);
+            const pColors = { high: '#f87171', medium: '#fbbf24', low: '#34d399' };
+            chartInstances.current.pie = new Chart(ctx, { type: 'pie', data: { labels: labels.map(l => l.charAt(0).toUpperCase() + l.slice(1)), datasets: [{ data: labels.map(l => analytics.byPriority[l]), backgroundColor: labels.map(l => pColors[l] || '#6366f1'), borderColor: 'rgba(20,20,32,0.9)', borderWidth: 3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#a0a0b8', padding: 16 } } } } });
+        }
+        // Donut Chart
+        if (chartRefs.donut.current) {
+            const ctx = chartRefs.donut.current.getContext('2d');
+            const labels = Object.keys(analytics.byStatus);
+            const sColors = { completed: '#34d399', pending: '#fbbf24', in_progress: '#38bdf8' };
+            chartInstances.current.donut = new Chart(ctx, { type: 'doughnut', data: { labels: labels.map(l => l.replace('_',' ')), datasets: [{ data: labels.map(l => analytics.byStatus[l]), backgroundColor: labels.map(l => sColors[l] || '#a78bfa'), borderColor: 'rgba(20,20,32,0.9)', borderWidth: 3 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { color: '#a0a0b8', padding: 16 } } } } });
+        }
+        return () => { Object.values(chartInstances.current).forEach(c => { try { c.destroy(); } catch(e){} }); };
+    }, [loading, tasks, analytics]);
+
+    // AI Insights
+    const generateInsights = () => {
+        setInsightsLoading(true);
+        const prompt = `Analyze this task data and provide 5 actionable insights:\n- Total: ${analytics.total}, Completed: ${analytics.completed}, Pending: ${analytics.pending}, Efficiency: ${analytics.efficiency}%\n- Categories: ${JSON.stringify(analytics.byCategory)}\n- Priority: ${JSON.stringify(analytics.byPriority)}\n- By Day: ${JSON.stringify(analytics.byDay)}\nProvide insights as bullet points.`;
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/ai-chat', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: prompt })
+        }).then(r => r.json()).then(data => {
+            const text = data.assistant_response || 'No insights available';
+            setAiInsights(text.split('\n').filter(l => l.trim()));
+            setInsightsLoading(false);
+        }).catch(() => { setAiInsights(['❌ Could not generate insights']); setInsightsLoading(false); });
+    };
+
+    // CSV Upload
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const text = ev.target.result;
+            const lines = text.split('\n').filter(l => l.trim());
+            const headers = lines[0].split(',').map(h => h.trim());
+            const rows = lines.slice(1).map(l => { const vals = l.split(','); const obj = {}; headers.forEach((h, i) => obj[h] = (vals[i] || '').trim()); return obj; });
+            setUploadedData({ headers, rows, filename: file.name });
+        };
+        reader.readAsText(file);
+    };
+
+    // Export Report
+    const exportReport = () => {
+        let report = '=== TaskMaster AI - Data Analysis Report ===\n';
+        report += `Generated: ${new Date().toLocaleString()}\n\n`;
+        report += `--- KPIs ---\nTotal Tasks: ${analytics.total}\nCompleted: ${analytics.completed}\nPending: ${analytics.pending}\nEfficiency: ${analytics.efficiency}%\n\n`;
+        report += `--- By Category ---\n${Object.entries(analytics.byCategory).map(([k,v]) => `  ${k}: ${v}`).join('\n')}\n\n`;
+        report += `--- By Priority ---\n${Object.entries(analytics.byPriority).map(([k,v]) => `  ${k}: ${v}`).join('\n')}\n\n`;
+        if (aiInsights.length) report += `--- AI Insights ---\n${aiInsights.join('\n')}\n`;
+        const blob = new Blob([report], { type: 'text/plain' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = 'taskmaster_analysis_report.txt'; a.click();
+    };
+
+    // Sort/filter tasks for table
+    const filteredTasks = useMemo(() => {
+        let result = [...tasks];
+        if (searchQuery) result = result.filter(t => (t.title || '').toLowerCase().includes(searchQuery.toLowerCase()) || (t.description || '').toLowerCase().includes(searchQuery.toLowerCase()));
+        if (categoryFilter !== 'all') result = result.filter(t => (t.category || 'uncategorized') === categoryFilter);
+        result.sort((a, b) => { const av = a[sortField] || ''; const bv = b[sortField] || ''; return sortDir === 'asc' ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1); });
+        return result;
+    }, [tasks, searchQuery, categoryFilter, sortField, sortDir]);
+
+    const categories = useMemo(() => [...new Set(tasks.map(t => t.category || 'uncategorized'))], [tasks]);
+
+    // KPI Card helper
+    const kpiCard = (icon, label, value, color, sub) => React.createElement('div', { style: { padding: '20px', backgroundColor: 'rgba(20,20,32,0.75)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)', borderTop: '3px solid ' + color, transition: 'all 0.3s' }, onMouseEnter: e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.4)'; }, onMouseLeave: e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; } },
+        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' } },
+            React.createElement('span', { style: { fontSize: '22px' } }, icon),
+            React.createElement('span', { style: { color: '#6b6b80', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' } }, label)
+        ),
+        React.createElement('div', { style: { fontSize: '32px', fontWeight: '800', color: color, lineHeight: '1' } }, value),
+        sub && React.createElement('p', { style: { margin: '6px 0 0', color: '#6b6b80', fontSize: '11px' } }, sub)
+    );
+
+    // Chart card helper
+    const chartCard = (title, refKey, height) => React.createElement('div', { style: { padding: '20px', backgroundColor: 'rgba(20,20,32,0.75)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)' } },
+        React.createElement('h4', { style: { margin: '0 0 14px', color: '#f0f0f5', fontSize: '14px', fontWeight: '600' } }, title),
+        React.createElement('div', { style: { height: height || '250px', position: 'relative' } },
+            React.createElement('canvas', { ref: chartRefs[refKey] })
+        )
+    );
+
+    if (loading) return React.createElement('div', { className: 'container' }, React.createElement('p', { style: { textAlign: 'center', color: '#6b6b80', padding: '40px' } }, '📊 Loading analytics...'));
+
+    return React.createElement('div', { className: 'container' },
+        // Header
+        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' } },
+            React.createElement('div', null,
+                React.createElement('h2', { style: { margin: '0 0 6px', color: '#f0f0f5', fontSize: '24px', fontWeight: '700' } }, '📊 Data Analysis Dashboard'),
+                React.createElement('p', { style: { margin: 0, color: '#6b6b80', fontSize: '13px' } }, 'Real-time analytics from your task data — ' + analytics.total + ' tasks analyzed')
+            ),
+            React.createElement('div', { style: { display: 'flex', gap: '8px', flexWrap: 'wrap' } },
+                React.createElement('label', { style: { padding: '8px 16px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white', borderRadius: '10px', cursor: 'pointer', fontSize: '12px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' } },
+                    '📤 Upload CSV', React.createElement('input', { type: 'file', accept: '.csv,.txt', onChange: handleFileUpload, style: { display: 'none' } })
+                ),
+                React.createElement('button', { onClick: () => { onRefresh(); }, style: { padding: '8px 16px', backgroundColor: 'rgba(255,255,255,0.06)', color: '#a0a0b8', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', cursor: 'pointer', fontSize: '12px', fontWeight: '600' } }, '🔄 Refresh'),
+                React.createElement('button', { onClick: exportReport, style: { padding: '8px 16px', backgroundColor: 'rgba(52,211,153,0.12)', color: '#34d399', border: '1px solid rgba(52,211,153,0.2)', borderRadius: '10px', cursor: 'pointer', fontSize: '12px', fontWeight: '600' } }, '📥 Export Report')
+            )
+        ),
+
+        // KPI Cards Row
+        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px', marginBottom: '24px' } },
+            kpiCard('📋', 'Total Tasks', analytics.total, '#6366f1', 'All tracked tasks'),
+            kpiCard('✅', 'Completed', analytics.completed, '#34d399', Math.round((analytics.completed/Math.max(analytics.total,1))*100) + '% done'),
+            kpiCard('⏳', 'Pending', analytics.pending, '#fbbf24', 'Needs attention'),
+            kpiCard('🎯', 'Efficiency', analytics.efficiency + '%', analytics.efficiency >= 70 ? '#34d399' : analytics.efficiency >= 40 ? '#fbbf24' : '#f87171', analytics.efficiency >= 70 ? 'Great work!' : 'Room to improve')
+        ),
+
+        // Charts Grid
+        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' } },
+            chartCard('📊 Tasks by Category', 'bar', '260px'),
+            chartCard('📈 Weekly Activity', 'line', '260px'),
+            chartCard('🎯 Priority Distribution', 'pie', '260px'),
+            chartCard('📋 Status Breakdown', 'donut', '260px')
+        ),
+
+        // AI Insights Section
+        React.createElement('div', { style: { marginBottom: '24px', padding: '24px', backgroundColor: 'rgba(99,102,241,0.06)', borderRadius: '14px', border: '1px solid rgba(99,102,241,0.15)' } },
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' } },
+                React.createElement('h3', { style: { margin: 0, color: '#f0f0f5', fontSize: '16px', fontWeight: '700' } }, '🤖 AI-Powered Insights'),
+                React.createElement('button', { onClick: generateInsights, disabled: insightsLoading, style: { padding: '8px 18px', background: insightsLoading ? 'rgba(255,255,255,0.06)' : 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white', border: 'none', borderRadius: '8px', cursor: insightsLoading ? 'wait' : 'pointer', fontSize: '12px', fontWeight: '600' } }, insightsLoading ? '⟳ Analyzing...' : '✨ Generate Insights')
+            ),
+            aiInsights.length === 0 && !insightsLoading && React.createElement('p', { style: { color: '#6b6b80', fontSize: '13px', textAlign: 'center', padding: '20px' } }, 'Click "Generate Insights" to get AI-powered analysis of your task data.'),
+            aiInsights.length > 0 && React.createElement('div', { style: { display: 'grid', gap: '8px' } },
+                aiInsights.map((insight, i) => React.createElement('div', { key: i, style: { padding: '12px 16px', backgroundColor: 'rgba(20,20,32,0.6)', borderRadius: '10px', borderLeft: '3px solid #818cf8', color: '#a0a0b8', fontSize: '13px', lineHeight: '1.6' } }, insight))
+            )
+        ),
+
+        // Uploaded Data Preview
+        uploadedData && React.createElement('div', { style: { marginBottom: '24px', padding: '20px', backgroundColor: 'rgba(20,20,32,0.75)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)' } },
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' } },
+                React.createElement('h3', { style: { margin: 0, color: '#f0f0f5', fontSize: '15px' } }, '📁 Uploaded: ' + uploadedData.filename + ' (' + uploadedData.rows.length + ' rows)'),
+                React.createElement('button', { onClick: () => setUploadedData(null), style: { padding: '4px 12px', backgroundColor: 'rgba(248,113,113,0.12)', color: '#f87171', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px' } }, '✕ Clear')
+            ),
+            React.createElement('div', { style: { overflowX: 'auto', maxHeight: '300px', overflowY: 'auto' } },
+                React.createElement('table', { style: { width: '100%', borderCollapse: 'collapse', fontSize: '12px' } },
+                    React.createElement('thead', null, React.createElement('tr', null,
+                        uploadedData.headers.map(h => React.createElement('th', { key: h, style: { padding: '10px 12px', backgroundColor: 'rgba(99,102,241,0.1)', color: '#818cf8', textAlign: 'left', borderBottom: '1px solid rgba(255,255,255,0.08)', fontWeight: '600', whiteSpace: 'nowrap' } }, h))
+                    )),
+                    React.createElement('tbody', null,
+                        uploadedData.rows.slice(0, 50).map((row, i) => React.createElement('tr', { key: i, style: { borderBottom: '1px solid rgba(255,255,255,0.04)' } },
+                            uploadedData.headers.map(h => React.createElement('td', { key: h, style: { padding: '8px 12px', color: '#a0a0b8', whiteSpace: 'nowrap' } }, row[h] || '—'))
+                        ))
+                    )
+                )
+            )
+        ),
+
+        // Data Table
+        React.createElement('div', { style: { padding: '20px', backgroundColor: 'rgba(20,20,32,0.75)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)' } },
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' } },
+                React.createElement('h3', { style: { margin: 0, color: '#f0f0f5', fontSize: '15px' } }, '📋 Task Data Table'),
+                React.createElement('div', { style: { display: 'flex', gap: '8px', flexWrap: 'wrap' } },
+                    React.createElement('input', { type: 'text', placeholder: '🔍 Search tasks...', value: searchQuery, onChange: e => setSearchQuery(e.target.value), style: { padding: '6px 12px', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#f0f0f5', fontSize: '12px', width: '160px' } }),
+                    React.createElement('select', { value: categoryFilter, onChange: e => setCategoryFilter(e.target.value), style: { padding: '6px 10px', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#f0f0f5', fontSize: '12px' } },
+                        React.createElement('option', { value: 'all' }, 'All Categories'),
+                        categories.map(c => React.createElement('option', { key: c, value: c }, c))
+                    )
+                )
+            ),
+            React.createElement('div', { style: { overflowX: 'auto', maxHeight: '350px', overflowY: 'auto' } },
+                React.createElement('table', { style: { width: '100%', borderCollapse: 'collapse', fontSize: '12px' } },
+                    React.createElement('thead', null, React.createElement('tr', null,
+                        ['Title', 'Category', 'Priority', 'Status', 'Created'].map(h => React.createElement('th', { key: h, onClick: () => { const field = h.toLowerCase().replace(' ','_'); setSortField(field === 'created' ? 'created_at' : field); setSortDir(d => d === 'asc' ? 'desc' : 'asc'); }, style: { padding: '10px 12px', backgroundColor: 'rgba(99,102,241,0.1)', color: '#818cf8', textAlign: 'left', borderBottom: '1px solid rgba(255,255,255,0.08)', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap', userSelect: 'none' } }, h + (sortField === (h.toLowerCase() === 'created' ? 'created_at' : h.toLowerCase()) ? (sortDir === 'asc' ? ' ↑' : ' ↓') : '')))
+                    )),
+                    React.createElement('tbody', null,
+                        filteredTasks.slice(0, 50).map((t, i) => React.createElement('tr', { key: t.id || i, style: { borderBottom: '1px solid rgba(255,255,255,0.04)', transition: 'background 0.2s' }, onMouseEnter: e => e.currentTarget.style.backgroundColor = 'rgba(99,102,241,0.04)', onMouseLeave: e => e.currentTarget.style.backgroundColor = 'transparent' },
+                            React.createElement('td', { style: { padding: '10px 12px', color: '#1a1a2e', fontWeight: '600', maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, t.title || '—'),
+                            React.createElement('td', { style: { padding: '10px 12px' } }, React.createElement('span', { style: { padding: '3px 8px', backgroundColor: 'rgba(99,102,241,0.1)', color: '#818cf8', borderRadius: '6px', fontSize: '11px' } }, t.category || 'uncategorized')),
+                            React.createElement('td', { style: { padding: '10px 12px' } }, React.createElement('span', { style: { padding: '3px 8px', backgroundColor: t.priority === 'high' ? 'rgba(248,113,113,0.12)' : t.priority === 'low' ? 'rgba(52,211,153,0.12)' : 'rgba(251,191,36,0.12)', color: t.priority === 'high' ? '#f87171' : t.priority === 'low' ? '#34d399' : '#fbbf24', borderRadius: '6px', fontSize: '11px', fontWeight: '600' } }, (t.priority || 'medium'))),
+                            React.createElement('td', { style: { padding: '10px 12px' } }, React.createElement('span', { style: { padding: '3px 8px', backgroundColor: t.status === 'completed' ? 'rgba(52,211,153,0.12)' : 'rgba(251,191,36,0.12)', color: t.status === 'completed' ? '#34d399' : '#fbbf24', borderRadius: '6px', fontSize: '11px', fontWeight: '600' } }, t.status || 'pending')),
+                            React.createElement('td', { style: { padding: '10px 12px', color: '#6b6b80', whiteSpace: 'nowrap' } }, t.created_at ? new Date(t.created_at).toLocaleDateString() : '—')
+                        ))
+                    )
+                )
+            ),
+            React.createElement('p', { style: { margin: '10px 0 0', color: '#6b6b80', fontSize: '11px', textAlign: 'right' } }, 'Showing ' + Math.min(filteredTasks.length, 50) + ' of ' + filteredTasks.length + ' tasks')
+        )
+    );
+}
+
+
+// ====== PROJECT PLANNER COMPONENT ======
+function ProjectPlanner({ refreshTrigger, onRefresh }) {
+    const [goalInput, setGoalInput] = useState('');
+    const [projects, setProjects] = useState(() => { try { return JSON.parse(localStorage.getItem('tm_projects') || '[]'); } catch(e) { return []; } });
+    const [activeProject, setActiveProject] = useState(null);
+    const [generating, setGenerating] = useState(false);
+    const [kanbanView, setKanbanView] = useState('kanban');
+    const [aiSuggestions, setAiSuggestions] = useState([]);
+    const [backendTasks, setBackendTasks] = useState([]);
+
+    // Fetch real tasks from TaskManager backend
+    useEffect(() => {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks')
+            .then(r => r.json()).then(data => {
+                if (data && data.length) {
+                    setBackendTasks(data);
+                    // Auto-create "My TaskManager Tasks" project from real data
+                    const mapped = data.map((t, i) => {
+                        const created = new Date(t.created_at);
+                        const now = new Date();
+                        const weekDiff = Math.max(1, Math.ceil((now - created) / (7 * 24 * 60 * 60 * 1000)));
+                        const status = t.status === 'completed' ? 'done' : t.status === 'in_progress' ? 'in_progress' : 'todo';
+                        return { id: t.id || i + 1, title: t.title, priority: t.priority || 'medium', week: Math.min(weekDiff, 8), duration: 1, status, category: t.category || 'general' };
+                    });
+                    const tmProject = { id: 'taskmanager', goal: 'My TaskManager Tasks (' + data.length + ' tasks)', tasks: mapped, createdAt: new Date().toISOString(), isLive: true };
+                    // Merge with saved projects (replace old live project)
+                    setProjects(prev => {
+                        const withoutLive = prev.filter(p => p.id !== 'taskmanager');
+                        return [tmProject, ...withoutLive];
+                    });
+                }
+            }).catch(() => {});
+    }, [refreshTrigger]);
+
+    const saveProjects = (list) => { setProjects(list); localStorage.setItem('tm_projects', JSON.stringify(list.filter(p => !p.isLive))); };
+
+    const generatePlan = () => {
+        if (!goalInput.trim()) return;
+        setGenerating(true);
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/ai-chat', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'Create a detailed project plan for: "' + goalInput + '". Return ONLY a JSON array of tasks like: [{"title":"task name","priority":"high/medium/low","week":1,"duration":1,"status":"todo"}]. Return 6-10 tasks. JSON only, no other text.' })
+        }).then(r => r.json()).then(data => {
+            let tasks = [];
+            try {
+                const text = data.assistant_response || '[]';
+                const match = text.match(/\[[\s\S]*\]/);
+                if (match) tasks = JSON.parse(match[0]);
+            } catch(e) { tasks = [
+                { title: 'Research & Planning', priority: 'high', week: 1, duration: 1, status: 'todo' },
+                { title: 'Design & Prototyping', priority: 'high', week: 2, duration: 1, status: 'todo' },
+                { title: 'Core Development', priority: 'high', week: 3, duration: 2, status: 'todo' },
+                { title: 'Testing & QA', priority: 'medium', week: 5, duration: 1, status: 'todo' },
+                { title: 'Launch & Deploy', priority: 'medium', week: 6, duration: 1, status: 'todo' }
+            ]; }
+            const project = { id: Date.now(), goal: goalInput, tasks: tasks.map((t,i) => ({ ...t, id: i+1 })), createdAt: new Date().toISOString() };
+            const updated = [...projects, project];
+            saveProjects(updated);
+            setActiveProject(project);
+            setGoalInput('');
+            setGenerating(false);
+            generateSuggestions(goalInput);
+        }).catch(() => {
+            const fallback = { id: Date.now(), goal: goalInput, tasks: [
+                { id:1, title: 'Research & Analysis', priority: 'high', week: 1, duration: 1, status: 'todo' },
+                { id:2, title: 'Design Phase', priority: 'high', week: 2, duration: 1, status: 'todo' },
+                { id:3, title: 'Development Sprint 1', priority: 'high', week: 3, duration: 2, status: 'todo' },
+                { id:4, title: 'Development Sprint 2', priority: 'medium', week: 4, duration: 2, status: 'todo' },
+                { id:5, title: 'Testing & QA', priority: 'medium', week: 5, duration: 1, status: 'todo' },
+                { id:6, title: 'Deployment & Launch', priority: 'low', week: 6, duration: 1, status: 'todo' }
+            ], createdAt: new Date().toISOString() };
+            saveProjects([...projects, fallback]);
+            setActiveProject(fallback);
+            setGoalInput('');
+            setGenerating(false);
+        });
+    };
+
+    const generateSuggestions = (goal) => {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/ai-chat', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'Give 5 short optimization tips for this project: "' + goal + '". Each tip should be one line.' })
+        }).then(r => r.json()).then(data => {
+            const text = data.assistant_response || '';
+            setAiSuggestions(text.split('\n').filter(l => l.trim()).slice(0, 5));
+        }).catch(() => setAiSuggestions(['Focus on MVP first', 'Set weekly milestones', 'Prioritize user feedback']));
+    };
+
+    const updateTaskStatus = (taskId, newStatus) => {
+        if (!activeProject) return;
+        const updated = { ...activeProject, tasks: activeProject.tasks.map(t => t.id === taskId ? { ...t, status: newStatus } : t) };
+        setActiveProject(updated);
+        saveProjects(projects.map(p => p.id === updated.id ? updated : p));
+    };
+
+    const deleteProject = (id) => { const updated = projects.filter(p => p.id !== id); saveProjects(updated); if (activeProject && activeProject.id === id) setActiveProject(null); };
+
+    const progress = activeProject ? (() => { const done = activeProject.tasks.filter(t => t.status === 'done').length; return activeProject.tasks.length ? Math.round((done / activeProject.tasks.length) * 100) : 0; })() : 0;
+    const priColor = (p) => p === 'high' ? '#f87171' : p === 'low' ? '#34d399' : '#fbbf24';
+    const statusCols = ['todo', 'in_progress', 'done'];
+    const statusLabels = { todo: '📋 To Do', in_progress: '🔄 In Progress', done: '✅ Done' };
+    const maxWeek = activeProject ? Math.max(...activeProject.tasks.map(t => (t.week || 1) + (t.duration || 1) - 1), 6) : 6;
+
+    return React.createElement('div', { className: 'container' },
+        // Header
+        React.createElement('div', { style: { marginBottom: '24px' } },
+            React.createElement('h2', { style: { margin: '0 0 6px', color: 'var(--text-primary)', fontSize: '24px', fontWeight: '700' } }, '📋 Project Planner'),
+            React.createElement('p', { style: { margin: 0, color: 'var(--text-secondary)', fontSize: '13px' } }, 'AI-powered project planning — Enter a goal and get an instant plan')
+        ),
+        // Goal Input
+        React.createElement('div', { style: { display: 'flex', gap: '10px', marginBottom: '24px' } },
+            React.createElement('input', { type: 'text', value: goalInput, onChange: e => setGoalInput(e.target.value), onKeyDown: e => e.key === 'Enter' && generatePlan(), placeholder: '🎯 Enter your project goal... (e.g., "Launch a SaaS product")', style: { flex: 1, padding: '14px 18px', borderRadius: '12px', border: '1px solid var(--border-accent)', backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: '14px', fontFamily: 'inherit' } }),
+            React.createElement('button', { onClick: generatePlan, disabled: generating || !goalInput.trim(), style: { padding: '14px 24px', background: generating ? 'var(--bg-secondary)' : 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white', border: 'none', borderRadius: '12px', cursor: generating ? 'wait' : 'pointer', fontWeight: '700', fontSize: '14px', whiteSpace: 'nowrap' } }, generating ? '⟳ Generating...' : '🚀 Generate Plan')
+        ),
+        // Project List
+        projects.length > 0 && !activeProject && React.createElement('div', { style: { marginBottom: '24px' } },
+            React.createElement('h3', { style: { margin: '0 0 14px', color: 'var(--text-primary)', fontSize: '15px', fontWeight: '700' } }, '📂 My Projects (' + projects.length + ')'),
+            projects.map(p => React.createElement('div', { key: p.id, onClick: () => { setActiveProject(p); generateSuggestions(p.goal); }, style: { padding: '16px', marginBottom: '10px', backgroundColor: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border-default)', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }, onMouseEnter: e => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; e.currentTarget.style.transform = 'translateY(-2px)'; }, onMouseLeave: e => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.transform = 'none'; } },
+                React.createElement('div', null,
+                    React.createElement('h4', { style: { margin: '0 0 4px', color: 'var(--text-primary)', fontSize: '14px' } }, '🎯 ' + p.goal),
+                    React.createElement('p', { style: { margin: 0, color: 'var(--text-secondary)', fontSize: '11px' } }, p.tasks.length + ' tasks • ' + new Date(p.createdAt).toLocaleDateString())
+                ),
+                React.createElement('div', { style: { display: 'flex', gap: '6px' } },
+                    React.createElement('span', { style: { padding: '4px 10px', backgroundColor: 'var(--accent-primary-light)', color: 'var(--accent-primary)', borderRadius: '6px', fontSize: '11px' } }, p.tasks.filter(t=>t.status==='done').length + '/' + p.tasks.length + ' done'),
+                    React.createElement('button', { onClick: (e) => { e.stopPropagation(); deleteProject(p.id); }, style: { padding: '4px 8px', backgroundColor: 'rgba(248,113,113,0.1)', color: 'var(--danger, #f87171)', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '11px' } }, '✕')
+                )
+            ))
+        ),
+        // Active Project View
+        activeProject && React.createElement('div', null,
+            // Back button + Progress
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' } },
+                React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '12px' } },
+                    React.createElement('button', { onClick: () => setActiveProject(null), style: { padding: '6px 14px', backgroundColor: 'var(--bg-input)', color: 'var(--text-secondary)', border: '1px solid var(--border-default)', borderRadius: '8px', cursor: 'pointer', fontSize: '12px' } }, '← Back'),
+                    React.createElement('h3', { style: { margin: 0, color: 'var(--text-primary)', fontSize: '16px' } }, '🎯 ' + activeProject.goal)
+                ),
+                React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '10px' } },
+                    React.createElement('div', { style: { width: '150px', height: '8px', backgroundColor: 'var(--border-subtle)', borderRadius: '4px', overflow: 'hidden' } },
+                        React.createElement('div', { style: { width: progress + '%', height: '100%', background: progress >= 80 ? 'var(--success, #34d399)' : progress >= 40 ? 'var(--warning, #fbbf24)' : 'var(--accent-primary)', borderRadius: '4px', transition: 'width 0.5s' } })
+                    ),
+                    React.createElement('span', { style: { color: progress >= 80 ? 'var(--success, #34d399)' : 'var(--text-secondary)', fontSize: '13px', fontWeight: '700' } }, progress + '%')
+                )
+            ),
+            // View Toggle
+            React.createElement('div', { style: { display: 'flex', gap: '4px', marginBottom: '20px', padding: '4px', backgroundColor: 'var(--bg-card)', borderRadius: '10px', border: '1px solid var(--border-subtle)' } },
+                ['kanban', 'timeline', 'list'].map(v => React.createElement('button', { key: v, onClick: () => setKanbanView(v), style: { flex: 1, padding: '8px', backgroundColor: kanbanView === v ? 'var(--accent-primary-light)' : 'transparent', border: kanbanView === v ? '1px solid var(--border-accent)' : '1px solid transparent', borderRadius: '8px', color: kanbanView === v ? 'var(--accent-primary)' : 'var(--text-secondary)', fontSize: '12px', fontWeight: '600', cursor: 'pointer' } }, v === 'kanban' ? '📊 Kanban' : v === 'timeline' ? '📅 Timeline' : '📋 List'))
+            ),
+            // KANBAN VIEW
+            kanbanView === 'kanban' && React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '24px' } },
+                statusCols.map(status => React.createElement('div', { key: status, style: { padding: '16px', backgroundColor: 'var(--bg-card)', borderRadius: '14px', border: '1px solid var(--border-default)', minHeight: '200px' } },
+                    React.createElement('h4', { style: { margin: '0 0 14px', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between' } }, statusLabels[status], React.createElement('span', { style: { backgroundColor: 'var(--accent-primary-light)', color: 'var(--accent-primary)', padding: '2px 8px', borderRadius: '10px', fontSize: '11px' } }, activeProject.tasks.filter(t => (t.status||'todo') === status).length)),
+                    activeProject.tasks.filter(t => (t.status||'todo') === status).map(task => React.createElement('div', { key: task.id, style: { padding: '12px', marginBottom: '8px', backgroundColor: 'var(--bg-secondary)', borderRadius: '10px', border: '1px solid var(--border-default)', borderLeft: '3px solid ' + priColor(task.priority) } },
+                        React.createElement('p', { style: { margin: '0 0 8px', color: 'var(--text-primary)', fontSize: '13px', fontWeight: '500' } }, task.title),
+                        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+                            React.createElement('span', { style: { padding: '2px 8px', backgroundColor: priColor(task.priority) + '18', color: priColor(task.priority), borderRadius: '6px', fontSize: '10px', fontWeight: '600' } }, task.priority),
+                            React.createElement('select', { value: task.status || 'todo', onChange: e => updateTaskStatus(task.id, e.target.value), style: { padding: '3px 6px', backgroundColor: 'var(--bg-input)', color: 'var(--text-secondary)', border: '1px solid var(--border-default)', borderRadius: '6px', fontSize: '10px', cursor: 'pointer' } },
+                                React.createElement('option', { value: 'todo' }, 'To Do'),
+                                React.createElement('option', { value: 'in_progress' }, 'In Progress'),
+                                React.createElement('option', { value: 'done' }, 'Done')
+                            )
+                        )
+                    ))
+                ))
+            ),
+            // TIMELINE VIEW
+            kanbanView === 'timeline' && React.createElement('div', { style: { padding: '20px', backgroundColor: 'var(--bg-card)', borderRadius: '14px', border: '1px solid var(--border-default)', marginBottom: '24px', overflowX: 'auto' } },
+                React.createElement('div', { style: { display: 'flex', marginBottom: '10px', paddingLeft: '140px' } },
+                    Array.from({ length: maxWeek }, (_, i) => React.createElement('div', { key: i, style: { flex: '0 0 80px', textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '11px', fontWeight: '600' } }, 'Week ' + (i + 1)))
+                ),
+                activeProject.tasks.map(task => React.createElement('div', { key: task.id, style: { display: 'flex', alignItems: 'center', marginBottom: '6px', height: '32px' } },
+                    React.createElement('div', { style: { width: '140px', flexShrink: 0, fontSize: '12px', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: '10px' } }, task.title),
+                    React.createElement('div', { style: { flex: 1, position: 'relative', height: '24px', display: 'flex' } },
+                        Array.from({ length: maxWeek }, (_, i) => React.createElement('div', { key: i, style: { flex: '0 0 80px', borderLeft: '1px solid var(--border-subtle)' } })),
+                        React.createElement('div', { style: { position: 'absolute', left: ((task.week || 1) - 1) * 80 + 'px', width: (task.duration || 1) * 80 - 8 + 'px', height: '24px', background: 'linear-gradient(90deg, ' + priColor(task.priority) + '88, ' + priColor(task.priority) + '44)', borderRadius: '6px', display: 'flex', alignItems: 'center', paddingLeft: '8px', fontSize: '10px', color: '#fff', fontWeight: '600' } }, task.title.substring(0, 15))
+                    )
+                ))
+            ),
+            // LIST VIEW
+            kanbanView === 'list' && React.createElement('div', { style: { marginBottom: '24px' } },
+                activeProject.tasks.map(task => React.createElement('div', { key: task.id, style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', marginBottom: '6px', backgroundColor: 'var(--bg-card)', borderRadius: '10px', border: '1px solid var(--border-default)', borderLeft: '3px solid ' + priColor(task.priority) } },
+                    React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '10px', flex: 1 } },
+                        React.createElement('input', { type: 'checkbox', checked: task.status === 'done', onChange: () => updateTaskStatus(task.id, task.status === 'done' ? 'todo' : 'done'), style: { width: '18px', height: '18px', cursor: 'pointer', accentColor: 'var(--accent-primary)' } }),
+                        React.createElement('span', { style: { color: task.status === 'done' ? 'var(--text-tertiary)' : 'var(--text-primary)', fontSize: '13px', fontWeight: '500', textDecoration: task.status === 'done' ? 'line-through' : 'none' } }, task.title)
+                    ),
+                    React.createElement('div', { style: { display: 'flex', gap: '8px', alignItems: 'center' } },
+                        React.createElement('span', { style: { padding: '3px 8px', backgroundColor: priColor(task.priority) + '18', color: priColor(task.priority), borderRadius: '6px', fontSize: '10px', fontWeight: '600' } }, task.priority),
+                        React.createElement('span', { style: { color: 'var(--text-tertiary)', fontSize: '11px' } }, 'W' + (task.week || 1)),
+                        React.createElement('select', { value: task.status || 'todo', onChange: e => updateTaskStatus(task.id, e.target.value), style: { padding: '4px 8px', backgroundColor: 'var(--bg-input)', color: 'var(--text-secondary)', border: '1px solid var(--border-default)', borderRadius: '6px', fontSize: '11px', cursor: 'pointer' } },
+                            React.createElement('option', { value: 'todo' }, 'To Do'),
+                            React.createElement('option', { value: 'in_progress' }, 'In Progress'),
+                            React.createElement('option', { value: 'done' }, 'Done')
+                        )
+                    )
+                ))
+            ),
+            // AI Suggestions
+            aiSuggestions.length > 0 && React.createElement('div', { style: { padding: '20px', backgroundColor: 'var(--bg-card)', borderRadius: '14px', border: '1px solid var(--border-default)' } },
+                React.createElement('h4', { style: { margin: '0 0 12px', color: 'var(--accent-primary)', fontSize: '13px', fontWeight: '700' } }, '🤖 AI Suggestions'),
+                aiSuggestions.map((s, i) => React.createElement('p', { key: i, style: { margin: '0 0 6px', padding: '8px 12px', backgroundColor: 'var(--bg-card)', borderRadius: '8px', borderLeft: '3px solid var(--accent-primary)', color: 'var(--text-primary)', fontSize: '12px' } }, s))
+            )
+        ),
+        // Empty state
+        projects.length === 0 && !activeProject && React.createElement('div', { style: { textAlign: 'center', padding: '60px 20px', backgroundColor: 'var(--bg-card)', borderRadius: '16px', border: '2px dashed var(--border-default)' } },
+            React.createElement('p', { style: { fontSize: '48px', margin: '0 0 12px' } }, '📋'),
+            React.createElement('h3', { style: { margin: '0 0 8px', color: 'var(--text-primary)', fontSize: '18px' } }, 'No Projects Yet'),
+            React.createElement('p', { style: { color: 'var(--text-secondary)', fontSize: '13px' } }, 'Enter a goal above and click "Generate Plan" to get started!')
         )
     );
 }
@@ -2547,7 +3102,7 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
     const [isSpeaking, setIsSpeaking] = useState(false);
 
     const loadTasks = () => {
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/tasks')
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks')
             .then(res => res.json())
             .then(data => {
                 setTasks(data || []);
@@ -2659,7 +3214,7 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
         setChatLoading(true);
 
         // Send to backend
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/ai-chat', {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/ai-chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -2718,6 +3273,19 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
         };
 
         setTodayPlan(plan);
+        
+        // Automatically save to schedule
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/schedule', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: `Auto Daily Plan`,
+                description: `Morning:\n${plan.morning.join('\n')}\n\nAfternoon:\n${plan.afternoon.join('\n')}\n\nEvening:\n${plan.evening.join('\n')}`,
+                event_time: new Date().toISOString(),
+                priority: 'high'
+            })
+        }).then(() => onRefresh && onRefresh());
+
         setAnalyzing(false);
         alert('✓ Daily Plan Created!\n\nYour schedule has been optimized for today.');
     };
@@ -2749,6 +3317,23 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
             };
 
             setTodayPlan(plan);
+            
+            // Actually create the schedule event on the backend
+            const [startHour, startMinute] = planFormData.workStart.split(':');
+            const eventDate = new Date();
+            eventDate.setHours(parseInt(startHour), parseInt(startMinute), 0, 0);
+            
+            fetch('https://genai-backend-1013063132017.us-central1.run.app/api/schedule', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: `Daily Plan: ${planFormData.focusArea.toUpperCase()} Focus`,
+                    description: `Morning:\n${plan.morning.join('\n')}\n\nAfternoon:\n${plan.afternoon.join('\n')}\n\nEvening:\n${plan.evening.join('\n')}`,
+                    event_time: eventDate.toISOString(),
+                    priority: 'high'
+                })
+            }).then(() => onRefresh && onRefresh());
+
             setShowPlanForm(false);
             setPlanFormData({ name: '', workStart: '09:00', workEnd: '18:00', breakDuration: '30', focusArea: 'balanced' });
             setAnalyzing(false);
@@ -2773,14 +3358,7 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
             tasksList: pendingTasks.slice(0, 5).map(t => `${t.title} (${t.priority})`).join(', ')
         };
 
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/ai-suggestions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                taskSummary: taskSummary,
-                prompt: `Analyze these tasks and provide 3-4 specific, actionable suggestions to improve productivity and task completion. Include fixes for bottlenecks.`
-            })
-        })
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/suggestions')
         .then(res => res.json())
         .then(data => {
             console.log('AI Suggestions:', data);
@@ -2846,8 +3424,8 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
     if (loading) return React.createElement('div', { className: 'container' }, React.createElement('p', null, 'Loading AI Assistant...'));
 
     return React.createElement('div', { className: 'container' },
-        React.createElement('h2', { style: { marginTop: 0 } }, '🤖 AI Life Assistant'),
-        React.createElement('p', { style: { color: '#666', marginBottom: '30px' } }, 'Smart daily task planning, life optimization & interactive chat'),
+        React.createElement('h2', { style: { marginTop: 0, color: 'var(--text-primary)' } }, '🤖 AI Life Assistant'),
+        React.createElement('p', { style: { color: 'var(--text-secondary)', marginBottom: '30px' } }, 'Smart daily task planning, life optimization & interactive chat'),
 
         // NEW: Quick action buttons
         React.createElement('div', { style: {
@@ -2860,7 +3438,7 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
                 onClick: () => setShowChat(!showChat),
                 style: {
                     padding: '20px',
-                    backgroundColor: showChat ? '#10b981' : '#6366f1',
+                    backgroundColor: showChat ? 'var(--success)' : 'var(--accent-primary)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
@@ -2884,8 +3462,8 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
                 disabled: analyzing,
                 style: {
                     padding: '20px',
-                    backgroundColor: analyzing ? '#ccc' : '#6366f1',
-                    color: 'white',
+                    backgroundColor: analyzing ? 'var(--bg-secondary)' : 'var(--accent-primary)',
+                    color: analyzing ? 'var(--text-tertiary)' : 'white',
                     border: 'none',
                     borderRadius: '8px',
                     cursor: analyzing ? 'not-allowed' : 'pointer',
@@ -2908,8 +3486,8 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
                 disabled: analyzing,
                 style: {
                     padding: '20px',
-                    backgroundColor: analyzing ? '#ccc' : '#8b5cf6',
-                    color: 'white',
+                    backgroundColor: analyzing ? 'var(--bg-secondary)' : 'var(--accent-secondary)',
+                    color: analyzing ? 'var(--text-tertiary)' : 'white',
                     border: 'none',
                     borderRadius: '8px',
                     cursor: analyzing ? 'not-allowed' : 'pointer',
@@ -2931,28 +3509,28 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
 
         // NEW: Chat Interface
         showChat && React.createElement('div', { style: {
-            backgroundColor: '#f8fafc',
+            backgroundColor: 'var(--bg-secondary)',
             padding: '25px',
             borderRadius: '12px',
-            border: '2px solid #6366f1',
+            border: '2px solid var(--accent-primary)',
             marginBottom: '30px'
         }},
             React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' } },
-                React.createElement('h3', { style: { margin: 0 } }, '💬 Interactive Chat'),
+                React.createElement('h3', { style: { margin: 0, color: 'var(--text-primary)' } }, '💬 Interactive Chat'),
                 React.createElement('button', {
                     onClick: () => {
                         setShowChat(false);
                         window.speechSynthesis.cancel();
                         setIsSpeaking(false);
                     },
-                    style: { backgroundColor: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer' }
+                    style: { backgroundColor: 'transparent', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text-secondary)' }
                 }, '✕')
             ),
 
             // Chat messages display
             React.createElement('div', { style: {
-                backgroundColor: 'white',
-                border: '1px solid #e2e8f0',
+                backgroundColor: 'var(--bg-card)',
+                border: '1px solid var(--border-default)',
                 borderRadius: '8px',
                 padding: '20px',
                 height: '300px',
@@ -2962,21 +3540,24 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
                 flexDirection: 'column',
                 gap: '12px'
             }},
-                chatMessages.length === 0 ? React.createElement('div', { style: { color: '#999', textAlign: 'center', lineHeight: '300px' } }, 'Start a conversation...') : null,
+                chatMessages.length === 0 ? React.createElement('div', { style: { color: 'var(--text-tertiary)', textAlign: 'center', lineHeight: '300px' } }, 'Start a conversation...') : null,
                 chatMessages.map((msg, idx) => React.createElement('div', {
                     key: idx,
                     style: {
-                        padding: '12px 16px',
-                        borderRadius: '8px',
-                        backgroundColor: msg.role === 'user' ? '#6366f1' : '#f0f4f8',
-                        color: msg.role === 'user' ? 'white' : '#333',
+                        padding: '14px 18px',
+                        borderRadius: '12px',
+                        backgroundColor: msg.role === 'user' ? '#6366f1' : '#f1f5f9',
+                        color: msg.role === 'user' ? '#ffffff' : '#111827',
                         alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                        maxWidth: '70%',
-                        wordWrap: 'break-word'
+                        maxWidth: '80%',
+                        wordWrap: 'break-word',
+                        overflowWrap: 'break-word',
+                        boxShadow: msg.role === 'user' ? '0 2px 8px rgba(99,102,241,0.3)' : '0 1px 4px rgba(0,0,0,0.1)',
+                        border: msg.role === 'user' ? 'none' : '1px solid #e2e8f0'
                     }
                 },
-                    React.createElement('div', { style: { fontSize: '12px', opacity: 0.7, marginBottom: '4px' } }, msg.timestamp),
-                    React.createElement('div', null, msg.content)
+                    React.createElement('div', { style: { fontSize: '11px', color: msg.role === 'user' ? 'rgba(255,255,255,0.7)' : '#6b7280', marginBottom: '6px', fontWeight: '500' } }, msg.timestamp),
+                    React.createElement('div', { style: { fontSize: '14px', lineHeight: '1.6', color: msg.role === 'user' ? '#ffffff' : '#111827' } }, msg.content)
                 ))
             ),
 
@@ -2991,7 +3572,9 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
                     style: {
                         flex: 1,
                         padding: '12px',
-                        border: '1px solid #ddd',
+                        border: '1px solid var(--border-default)',
+                        backgroundColor: 'var(--bg-input)',
+                        color: 'var(--text-primary)',
                         borderRadius: '6px',
                         fontSize: '14px',
                         fontFamily: 'inherit'
@@ -3058,34 +3641,34 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
         ),
 
         todayPlan && React.createElement('div', { style: {
-            backgroundColor: '#f0f9ff',
+            backgroundColor: 'rgba(56, 189, 248, 0.06)',
             padding: '25px',
             borderRadius: '8px',
-            border: '2px solid #0ea5e9',
+            border: '2px solid rgba(56, 189, 248, 0.3)',
             marginBottom: '30px'
         }},
-            React.createElement('h3', { style: { margin: '0 0 20px 0', color: '#0369a1' } }, '📅 Today\'s AI-Optimized Plan'),
+            React.createElement('h3', { style: { margin: '0 0 20px 0', color: '#38bdf8' } }, '📅 Today\'s AI-Optimized Plan'),
             React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' } },
-                React.createElement('div', { style: { padding: '15px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #ddd' } },
-                    React.createElement('h4', { style: { margin: '0 0 10px 0', color: '#ea580c' } }, '🌅 Morning (High Priority)'),
-                    todayPlan.morning.length > 0 ? React.createElement('ul', { style: { margin: '0', paddingLeft: '20px', color: '#666', fontSize: '14px' } },
+                React.createElement('div', { style: { padding: '15px', backgroundColor: 'rgba(20, 20, 32, 0.75)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' } },
+                    React.createElement('h4', { style: { margin: '0 0 10px 0', color: '#fb923c' } }, '🌅 Morning (High Priority)'),
+                    todayPlan.morning.length > 0 ? React.createElement('ul', { style: { margin: '0', paddingLeft: '20px', color: '#a0a0b8', fontSize: '14px' } },
                         todayPlan.morning.map((task, i) => React.createElement('li', { key: i, style: { marginBottom: '8px' } }, task))
-                    ) : React.createElement('p', { style: { margin: '0', color: '#999', fontSize: '14px' } }, 'No high-priority tasks')
+                    ) : React.createElement('p', { style: { margin: '0', color: '#6b6b80', fontSize: '14px' } }, 'No high-priority tasks')
                 ),
-                React.createElement('div', { style: { padding: '15px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #ddd' } },
-                    React.createElement('h4', { style: { margin: '0 0 10px 0', color: '#059669' } }, '☀️ Afternoon (Medium Priority)'),
-                    todayPlan.afternoon.length > 0 ? React.createElement('ul', { style: { margin: '0', paddingLeft: '20px', color: '#666', fontSize: '14px' } },
+                React.createElement('div', { style: { padding: '15px', backgroundColor: 'rgba(20, 20, 32, 0.75)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' } },
+                    React.createElement('h4', { style: { margin: '0 0 10px 0', color: '#34d399' } }, '☀️ Afternoon (Medium Priority)'),
+                    todayPlan.afternoon.length > 0 ? React.createElement('ul', { style: { margin: '0', paddingLeft: '20px', color: '#a0a0b8', fontSize: '14px' } },
                         todayPlan.afternoon.map((task, i) => React.createElement('li', { key: i, style: { marginBottom: '8px' } }, task))
-                    ) : React.createElement('p', { style: { margin: '0', color: '#999', fontSize: '14px' } }, 'No medium-priority tasks')
+                    ) : React.createElement('p', { style: { margin: '0', color: '#6b6b80', fontSize: '14px' } }, 'No medium-priority tasks')
                 ),
-                React.createElement('div', { style: { padding: '15px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #ddd' } },
-                    React.createElement('h4', { style: { margin: '0 0 10px 0', color: '#7c3aed' } }, '🌙 Evening (Low Priority)'),
-                    todayPlan.evening.length > 0 ? React.createElement('ul', { style: { margin: '0', paddingLeft: '20px', color: '#666', fontSize: '14px' } },
+                React.createElement('div', { style: { padding: '15px', backgroundColor: 'rgba(20, 20, 32, 0.75)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' } },
+                    React.createElement('h4', { style: { margin: '0 0 10px 0', color: '#a78bfa' } }, '🌙 Evening (Low Priority)'),
+                    todayPlan.evening.length > 0 ? React.createElement('ul', { style: { margin: '0', paddingLeft: '20px', color: '#a0a0b8', fontSize: '14px' } },
                         todayPlan.evening.map((task, i) => React.createElement('li', { key: i, style: { marginBottom: '8px' } }, task))
-                    ) : React.createElement('p', { style: { margin: '0', color: '#999', fontSize: '14px' } }, 'No low-priority tasks')
+                    ) : React.createElement('p', { style: { margin: '0', color: '#6b6b80', fontSize: '14px' } }, 'No low-priority tasks')
                 )
             ),
-            React.createElement('div', { style: { marginTop: '20px', display: 'flex', gap: '20px', fontSize: '14px', color: '#666' } },
+            React.createElement('div', { style: { marginTop: '20px', display: 'flex', gap: '20px', fontSize: '14px', color: '#a0a0b8' } },
                 React.createElement('span', null, React.createElement('strong', null, '📊 Total Tasks: '), todayPlan.total),
                 React.createElement('span', null, React.createElement('strong', null, '✓ Completed: '), todayPlan.completed),
                 React.createElement('span', null, React.createElement('strong', null, '⏳ Remaining: '), todayPlan.total - todayPlan.completed)
@@ -3093,15 +3676,15 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
         ),
 
         suggestions.length > 0 && React.createElement('div', { style: { marginBottom: '40px' }},
-            React.createElement('h3', { style: { marginBottom: '20px', color: '#1f2937', fontSize: '20px', fontWeight: 'bold' } }, '💡 AI-Powered Suggestions & Fixes'),
+            React.createElement('h3', { style: { marginBottom: '20px', color: '#f0f0f5', fontSize: '20px', fontWeight: 'bold' } }, '💡 AI-Powered Suggestions & Fixes'),
             React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr', gap: '20px' } },
                 suggestions.map((suggestion, idx) => React.createElement('div', { key: suggestion.id || idx, style: {
-                    backgroundColor: 'white',
+                    backgroundColor: 'rgba(20, 20, 32, 0.75)',
                     padding: '25px',
                     borderRadius: '12px',
-                    border: '2px solid #e5e7eb',
+                    border: '2px solid rgba(255,255,255,0.08)',
                     borderLeft: '6px solid #6366f1',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
                     transition: 'all 0.3s'
                 },
                 onMouseEnter: (e) => {
@@ -3116,14 +3699,14 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
                         React.createElement('span', { style: { fontSize: '36px', minWidth: '40px' } }, suggestion.icon || '💡'),
                         React.createElement('div', { style: { flex: 1 } },
                             React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' } },
-                                React.createElement('h4', { style: { margin: '0', fontSize: '16px', fontWeight: '700', color: '#1f2937' } }, suggestion.title),
-                                React.createElement('span', { style: { backgroundColor: '#dbeafe', color: '#1e40af', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', minWidth: 'fit-content' } }, suggestion.type)
+                                React.createElement('h4', { style: { margin: '0', fontSize: '16px', fontWeight: '700', color: '#f0f0f5' } }, suggestion.title),
+                                React.createElement('span', { style: { backgroundColor: 'rgba(56, 189, 248, 0.12)', color: '#1e40af', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', minWidth: 'fit-content' } }, suggestion.type)
                             ),
-                            React.createElement('p', { style: { margin: '0 0 15px 0', color: '#666', fontSize: '14px', lineHeight: '1.6' } }, suggestion.description),
+                            React.createElement('p', { style: { margin: '0 0 15px 0', color: '#a0a0b8', fontSize: '14px', lineHeight: '1.6' } }, suggestion.description),
                             
                             // Fix Section
-                            React.createElement('div', { style: { backgroundColor: '#fef3c7', borderLeft: '4px solid #f59e0b', padding: '15px', borderRadius: '6px', marginBottom: '15px' } },
-                                React.createElement('h5', { style: { margin: '0 0 8px 0', color: '#92400e', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase' } }, '🔧 Recommended Fix'),
+                            React.createElement('div', { style: { backgroundColor: 'rgba(251, 191, 36, 0.12)', borderLeft: '4px solid #f59e0b', padding: '15px', borderRadius: '6px', marginBottom: '15px' } },
+                                React.createElement('h5', { style: { margin: '0 0 8px 0', color: '#fbbf24', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase' } }, '🔧 Recommended Fix'),
                                 React.createElement('p', { style: { margin: '0', color: '#78350f', fontSize: '13px', lineHeight: '1.6' } }, suggestion.fix || suggestion.description)
                             ),
 
@@ -3146,7 +3729,23 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
                                 }, '💬 Ask AI for Details'),
                                 React.createElement('button', {
                                     onClick: () => {
-                                        alert('✓ Suggestion noted! Check the Tasks section to implement this fix.');
+                                        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/tasks', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                title: `[AI Suggestion] ${suggestion.title}`,
+                                                description: suggestion.fix || suggestion.description,
+                                                priority: 'medium'
+                                            })
+                                        })
+                                        .then(() => {
+                                            if (onRefresh) onRefresh();
+                                            alert('✓ Suggestion added to your tasks!');
+                                        })
+                                        .catch(err => {
+                                            console.error('Error adding suggestion task:', err);
+                                            alert('Error adding suggestion task');
+                                        });
                                     },
                                     style: {
                                         padding: '8px 16px',
@@ -3169,38 +3768,38 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
         React.createElement('div', { style: {
             marginTop: '40px',
             padding: '25px',
-            backgroundColor: '#fef3c7',
+            backgroundColor: 'rgba(251, 191, 36, 0.12)',
             borderRadius: '8px',
             border: '2px solid #f59e0b'
         }},
-            React.createElement('h3', { style: { margin: '0 0 15px 0', color: '#92400e' } }, '🎯 How to Use AI Assistant'),
+            React.createElement('h3', { style: { margin: '0 0 15px 0', color: '#fbbf24' } }, '🎯 How to Use AI Assistant'),
             React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '14px' } },
                 React.createElement('div', null,
                     React.createElement('p', { style: { margin: '0 0 10px 0' } }, React.createElement('strong', null, '1️⃣ Chat & Ask')),
-                    React.createElement('p', { style: { margin: '0', color: '#666' } }, 'Click "Ask Anything" to chat with AI. Use voice input (🎤) for hands-free interaction.')
+                    React.createElement('p', { style: { margin: '0', color: '#a0a0b8' } }, 'Click "Ask Anything" to chat with AI. Use voice input (🎤) for hands-free interaction.')
                 ),
                 React.createElement('div', null,
                     React.createElement('p', { style: { margin: '0 0 10px 0' } }, React.createElement('strong', null, '2️⃣ Voice Commands')),
-                    React.createElement('p', { style: { margin: '0', color: '#666' } }, 'Click the microphone button and speak your questions. AI will respond with text and voice.')
+                    React.createElement('p', { style: { margin: '0', color: '#a0a0b8' } }, 'Click the microphone button and speak your questions. AI will respond with text and voice.')
                 ),
                 React.createElement('div', null,
                     React.createElement('p', { style: { margin: '0 0 10px 0' } }, React.createElement('strong', null, '3️⃣ Create Daily Plan')),
-                    React.createElement('p', { style: { margin: '0', color: '#666' } }, 'Get AI-optimized schedules by priority level. Personalize your work hours and break times.')
+                    React.createElement('p', { style: { margin: '0', color: '#a0a0b8' } }, 'Get AI-optimized schedules by priority level. Personalize your work hours and break times.')
                 ),
                 React.createElement('div', null,
                     React.createElement('p', { style: { margin: '0 0 10px 0' } }, React.createElement('strong', null, '4️⃣ Get AI Suggestions')),
-                    React.createElement('p', { style: { margin: '0', color: '#666' } }, 'Receive personalized life advice and productivity tips based on your tasks and goals.')
+                    React.createElement('p', { style: { margin: '0', color: '#a0a0b8' } }, 'Receive personalized life advice and productivity tips based on your tasks and goals.')
                 )
             ),
-            React.createElement('div', { style: { marginTop: '20px', padding: '15px', backgroundColor: 'white', borderRadius: '6px', borderLeft: '4px solid #f59e0b' } },
-                React.createElement('p', { style: { margin: '0', fontSize: '13px', color: '#666' } }, 
+            React.createElement('div', { style: { marginTop: '20px', padding: '15px', backgroundColor: 'rgba(20, 20, 32, 0.75)', borderRadius: '6px', borderLeft: '4px solid #f59e0b' } },
+                React.createElement('p', { style: { margin: '0', fontSize: '13px', color: '#a0a0b8' } }, 
                     '✨ Talk to your AI assistant about anything! Get planning advice, productivity tips, life guidance, and more. The more you interact, the smarter it gets!'
                 )
             )
         ),
 
         showPlanForm && React.createElement('div', { style: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 } },
-            React.createElement('div', { style: { backgroundColor: 'white', borderRadius: '12px', padding: '30px', maxWidth: '500px', width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' } },
+            React.createElement('div', { style: { backgroundColor: 'rgba(20, 20, 32, 0.75)', borderRadius: '12px', padding: '30px', maxWidth: '500px', width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' } },
                 React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' } },
                     React.createElement('h2', { style: { margin: 0 } }, '📅 Create Your Daily Plan'),
                     React.createElement('button', {
@@ -3213,55 +3812,55 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
                 ),
 
                 React.createElement('div', { style: { marginBottom: '20px' } },
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#333' } }, 'Your Name *'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#f0f0f5' } }, 'Your Name *'),
                     React.createElement('input', {
                         type: 'text',
                         value: planFormData.name,
                         onChange: (e) => setPlanFormData({ ...planFormData, name: e.target.value }),
                         placeholder: 'Enter your name',
-                        style: { width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
+                        style: { width: '100%', padding: '10px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
                     })
                 ),
 
                 React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' } },
                     React.createElement('div', null,
-                        React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#333' } }, 'Work Start Time'),
+                        React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#f0f0f5' } }, 'Work Start Time'),
                         React.createElement('input', {
                             type: 'time',
                             value: planFormData.workStart,
                             onChange: (e) => setPlanFormData({ ...planFormData, workStart: e.target.value }),
-                            style: { width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
+                            style: { width: '100%', padding: '10px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
                         })
                     ),
                     React.createElement('div', null,
-                        React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#333' } }, 'Work End Time'),
+                        React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#f0f0f5' } }, 'Work End Time'),
                         React.createElement('input', {
                             type: 'time',
                             value: planFormData.workEnd,
                             onChange: (e) => setPlanFormData({ ...planFormData, workEnd: e.target.value }),
-                            style: { width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
+                            style: { width: '100%', padding: '10px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
                         })
                     )
                 ),
 
                 React.createElement('div', { style: { marginBottom: '20px' } },
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#333' } }, 'Break Duration (minutes)'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#f0f0f5' } }, 'Break Duration (minutes)'),
                     React.createElement('input', {
                         type: 'number',
                         value: planFormData.breakDuration,
                         onChange: (e) => setPlanFormData({ ...planFormData, breakDuration: e.target.value }),
                         min: '15',
                         max: '60',
-                        style: { width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
+                        style: { width: '100%', padding: '10px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
                     })
                 ),
 
                 React.createElement('div', { style: { marginBottom: '20px' } },
-                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#333' } }, 'Focus Area'),
+                    React.createElement('label', { style: { display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#f0f0f5' } }, 'Focus Area'),
                     React.createElement('select', {
                         value: planFormData.focusArea,
                         onChange: (e) => setPlanFormData({ ...planFormData, focusArea: e.target.value }),
-                        style: { width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
+                        style: { width: '100%', padding: '10px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit' }
                     },
                         React.createElement('option', { value: 'balanced' }, '⚖️ Balanced'),
                         React.createElement('option', { value: 'productive' }, '🚀 High Productivity'),
@@ -3276,7 +3875,7 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
                             setShowPlanForm(false);
                             setPlanFormData({ name: '', workStart: '09:00', workEnd: '18:00', breakDuration: '30', focusArea: 'balanced' });
                         },
-                        style: { flex: 1, padding: '10px 20px', backgroundColor: '#e5e7eb', color: '#333', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }
+                        style: { flex: 1, padding: '10px 20px', backgroundColor: 'rgba(255,255,255,0.06)', color: '#f0f0f5', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }
                     }, 'Cancel'),
                     React.createElement('button', {
                         onClick: handleCreatePlan,
@@ -3289,39 +3888,103 @@ function AIAssistant({ refreshTrigger, onRefresh }) {
 }
 
 // ====== HEADER COMPONENT ======
-function Header() {
-    return React.createElement('header', { className: 'header', style: { padding: '16px 20px', borderBottom: '1px solid #e5e7eb', backgroundColor: '#ffffff', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
-        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '12px' } },
-            React.createElement('div', { style: { fontSize: '32px', fontWeight: 'bold', background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', backgroundClip: 'text', color: 'transparent' } }, '🤖'),
+function Header({ theme, onToggleTheme }) {
+    const isDark = theme === 'dark';
+    return React.createElement('header', {
+        className: 'header',
+        style: {
+            padding: '16px 24px',
+            borderBottom: '1px solid ' + (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'),
+            backgroundColor: isDark ? 'rgba(10, 10, 15, 0.85)' : 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(20px)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            boxShadow: isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)'
+        }
+    },
+        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '14px' } },
+            React.createElement('div', { style: { width: '42px', height: '42px', borderRadius: '12px', background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', boxShadow: '0 4px 16px rgba(99, 102, 241, 0.3)' } }, '\ud83e\udd16'),
             React.createElement('div', null,
-                React.createElement('h1', { style: { margin: '0', fontSize: '22px', fontWeight: '700', color: '#1f2937', letterSpacing: '-0.5px' } }, 'AI Task Manager'),
-                React.createElement('p', { style: { margin: '0', fontSize: '12px', color: '#9ca3af', fontWeight: '500' } }, 'Smart Daily Assistant')
+                React.createElement('h1', { style: { margin: '0', fontSize: '20px', fontWeight: '800', color: isDark ? '#f0f0f5' : '#1a1a2e', letterSpacing: '-0.5px' } }, 'TaskMaster AI'),
+                React.createElement('p', { style: { margin: '0', fontSize: '11px', color: isDark ? '#6b6b80' : '#8888a0', fontWeight: '500', letterSpacing: '0.5px' } }, 'Intelligent Productivity Suite')
             )
+        ),
+        // Theme toggle button
+        React.createElement('button', {
+            id: 'theme-toggle-btn',
+            onClick: onToggleTheme,
+            title: isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+            style: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                padding: '8px 16px',
+                borderRadius: '12px',
+                border: '1px solid ' + (isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'),
+                backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                color: isDark ? '#f0f0f5' : '#1a1a2e',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: '600',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                letterSpacing: '0.3px'
+            },
+            onMouseEnter: function(e) {
+                e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)';
+                e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)';
+                e.currentTarget.style.transform = 'scale(1.04)';
+            },
+            onMouseLeave: function(e) {
+                e.currentTarget.style.backgroundColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)';
+                e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+                e.currentTarget.style.transform = 'scale(1)';
+            }
+        },
+            React.createElement('span', { style: { fontSize: '18px', lineHeight: '1', transition: 'transform 0.4s ease' } }, isDark ? '\u2600\ufe0f' : '\ud83c\udf19'),
+            React.createElement('span', null, isDark ? 'Light' : 'Dark')
         )
     );
 }
 
 // ====== TAB NAVIGATION COMPONENT ======
-function TabNav({ activeTab, onTabChange }) {
-    const tabs = ['Dashboard', 'Tasks', 'Schedule', 'Notes', 'Workflow', 'AI Assistant'];
+function TabNav({ activeTab, onTabChange, theme }) {
+    var isDark = theme === 'dark';
+    const tabs = [
+        { name: 'Dashboard', icon: '📊' },
+        { name: 'Tasks', icon: '✓' },
+        { name: 'Schedule', icon: '📅' },
+        { name: 'Notes', icon: '📝' },
+        { name: 'Workflow', icon: '⚡' },
+        { name: 'Analytics', icon: '📈' },
+        { name: 'Planner', icon: '📋' },
+        { name: 'AI Assistant', icon: '🤖' }
+    ];
     
-    return React.createElement('nav', { style: { display: 'flex', borderBottom: '1px solid #e5e7eb', backgroundColor: '#ffffff', padding: '0 20px' } },
+    return React.createElement('nav', { style: { display: 'flex', borderBottom: '1px solid ' + (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'), backgroundColor: isDark ? 'rgba(10, 10, 15, 0.75)' : 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', padding: '0 24px', gap: '2px' } },
         tabs.map(tab => React.createElement('button', {
-            key: tab,
-            onClick: () => onTabChange(tab),
+            key: tab.name,
+            onClick: () => onTabChange(tab.name),
             style: {
-                padding: '14px 16px',
-                border: 'none',
-                backgroundColor: 'transparent',
+                padding: '14px 18px',
+                borderTop: 'none',
+                borderLeft: 'none',
+                borderRight: 'none',
+                backgroundColor: activeTab === tab.name ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
                 fontSize: '13px',
-                fontWeight: activeTab === tab ? '600' : '500',
+                fontWeight: activeTab === tab.name ? '700' : '500',
                 cursor: 'pointer',
-                borderBottom: activeTab === tab ? '2px solid #6366f1' : '2px solid transparent',
-                color: activeTab === tab ? '#6366f1' : '#6b7280',
-                transition: 'all 0.2s',
-                letterSpacing: '0.3px'
+                borderBottom: activeTab === tab.name ? '3px solid #818cf8' : '3px solid transparent',
+                color: activeTab === tab.name ? '#a5b4fc' : (isDark ? '#6b6b80' : '#8888a0'),
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                letterSpacing: '0.3px',
+                borderRadius: '8px 8px 0 0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
             }
-        }, tab))
+        }, tab.icon + ' ' + tab.name))
     );
 }
 
@@ -3335,9 +3998,105 @@ function App() {
     const [floatingInput, setFloatingInput] = useState('');
     const [floatingLoading, setFloatingLoading] = useState(false);
 
+    // Theme state with localStorage persistence
+    const [theme, setTheme] = useState(function() {
+        try {
+            var saved = localStorage.getItem('taskmaster-theme');
+            return saved || 'dark';
+        } catch(e) {
+            return 'dark';
+        }
+    });
+
+    // Sync body class and localStorage when theme changes
+    useEffect(function() {
+        if (theme === 'light') {
+            document.body.classList.add('light-mode');
+            document.body.classList.remove('dark-mode');
+        } else {
+            document.body.classList.remove('light-mode');
+            document.body.classList.add('dark-mode');
+        }
+        try {
+            localStorage.setItem('taskmaster-theme', theme);
+        } catch(e) { /* ignore */ }
+    }, [theme]);
+
+    const toggleTheme = function() {
+        setTheme(function(prev) { return prev === 'dark' ? 'light' : 'dark'; });
+    };
+
     const handleRefresh = () => {
         setRefreshCounter(refreshCounter + 1);
     };
+
+    // Global Automation Engine (Background Worker)
+    useEffect(() => {
+        const checkAutomations = () => {
+            try {
+                const stored = localStorage.getItem('taskmaster_automations');
+                if (!stored) return;
+                const automations = JSON.parse(stored);
+                const now = new Date();
+                const currentTimeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+                
+                automations.forEach(auto => {
+                    if (!auto.enabled) return;
+                    
+                    // Time-based trigger execution logic
+                    if (auto.trigger.type === 'time' && auto.trigger.value === currentTimeStr) {
+                        const lastRunKey = 'last_run_' + auto.id;
+                        const lastRun = localStorage.getItem(lastRunKey);
+                        
+                        // Prevent duplicate execution within the same minute
+                        if (lastRun !== currentTimeStr) {
+                            localStorage.setItem(lastRunKey, currentTimeStr);
+                            
+                            // Evaluate condition (mocked logic for demo purposes)
+                            let conditionMet = true;
+                            if (auto.condition.type === 'tasks_pending' && auto.condition.operator === '>') {
+                                conditionMet = true; // Assume true for demo
+                            }
+                            
+                            if (conditionMet) {
+                                console.log(`Executing automation: ${auto.name}`);
+                                
+                                // Execute action
+                                const actionMsg = {
+                                    role: 'assistant',
+                                    content: `⚡ Automation Triggered [${auto.name}]: ${auto.action.value}`,
+                                    timestamp: new Date().toLocaleTimeString()
+                                };
+                                setFloatingMessages(prev => [...prev, actionMsg]);
+                                setShowFloatingAI(true);
+                                
+                                // Native Notification
+                                if ("Notification" in window && Notification.permission === "granted") {
+                                    new Notification("TaskMaster Automation", { body: auto.action.value });
+                                } else if ("Notification" in window && Notification.permission !== "denied") {
+                                    Notification.requestPermission().then(permission => {
+                                        if (permission === "granted") new Notification("TaskMaster Automation", { body: auto.action.value });
+                                    });
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (err) {
+                console.error("Automation Engine Error:", err);
+            }
+        };
+
+        // Check automations every 20 seconds
+        const interval = setInterval(checkAutomations, 20000); 
+        
+        // Request desktop notification permission on mount
+        if ("Notification" in window && Notification.permission === "default") {
+            Notification.requestPermission();
+        }
+        
+        return () => clearInterval(interval);
+    }, []);
 
     const sendFloatingMessage = () => {
         if (!floatingInput.trim()) return;
@@ -3352,7 +4111,7 @@ function App() {
         setFloatingInput('');
         setFloatingLoading(true);
 
-        fetch('https://genai-task-manager-backend-232002352100.us-central1.run.app/api/ai-chat', {
+        fetch('https://genai-backend-1013063132017.us-central1.run.app/api/ai-chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: userMsg.content })
@@ -3396,6 +4155,10 @@ function App() {
                 return React.createElement(Notes, { refreshTrigger: refreshCounter, onRefresh: handleRefresh });
             case 'Workflow':
                 return React.createElement(Workflow, { refreshTrigger: refreshCounter, onRefresh: handleRefresh });
+            case 'Analytics':
+                return React.createElement(DataAnalysis, { refreshTrigger: refreshCounter, onRefresh: handleRefresh });
+            case 'Planner':
+                return React.createElement(ProjectPlanner, { refreshTrigger: refreshCounter, onRefresh: handleRefresh });
             case 'AI Assistant':
                 return React.createElement(AIAssistant, { refreshTrigger: refreshCounter, onRefresh: handleRefresh });
             default:
@@ -3403,11 +4166,12 @@ function App() {
         }
     };
 
-    const mainBg = '#f9f9f9';
+    const isDark = theme === 'dark';
+    const mainBg = isDark ? '#0a0a0f' : '#f5f7fa';
     
-    return React.createElement('div', { style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: mainBg } },
-        React.createElement(Header),
-        React.createElement(TabNav, { activeTab: activeTab, onTabChange: (tab) => handleTabChange(tab) }),
+    return React.createElement('div', { style: { display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: mainBg, transition: 'background-color 0.4s ease' } },
+        React.createElement(Header, { theme: theme, onToggleTheme: toggleTheme }),
+        React.createElement(TabNav, { activeTab: activeTab, onTabChange: (tab) => handleTabChange(tab), theme: theme }),
         React.createElement('main', { style: { flex: 1, padding: '30px 20px' } },
             renderTabContent()
         ),
@@ -3423,10 +4187,10 @@ function App() {
                 borderRadius: '50%',
                 backgroundColor: '#6366f1',
                 color: 'white',
-                border: 'none',
+                border: '2px solid rgba(255,255,255,0.1)',
                 fontSize: '24px',
                 cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                boxShadow: '0 4px 20px rgba(99, 102, 241, 0.4), 0 0 40px rgba(99, 102, 241, 0.15)',
                 zIndex: 1000,
                 display: 'flex',
                 alignItems: 'center',
@@ -3442,30 +4206,31 @@ function App() {
                 right: '30px',
                 width: '350px',
                 height: '500px',
-                backgroundColor: 'white',
-                borderRadius: '12px',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+                backgroundColor: 'rgba(18, 18, 26, 0.95)',
+                borderRadius: '16px',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.5), 0 0 30px rgba(99, 102, 241, 0.1)',
                 display: 'flex',
                 flexDirection: 'column',
                 zIndex: 1000,
-                border: '1px solid #e5e7eb',
-                color: '#000000'
+                border: '1px solid rgba(255,255,255,0.08)',
+                color: '#f0f0f5',
+                backdropFilter: 'blur(20px)'
             }
         },
-            React.createElement('div', { style: { padding: '15px', borderBottom: '1px solid #e5e7eb', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#1f2937' } },
-                'AI Assistant 🤖',
+            React.createElement('div', { style: { padding: '15px', borderBottom: '1px solid rgba(255,255,255,0.06)', fontWeight: '600', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#f0f0f5', fontSize: '14px' } },
+                '✨ AI Assistant',
                 React.createElement('button', {
                     onClick: () => setShowFloatingAI(false),
-                    style: { background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', color: '#1f2937' }
+                    style: { background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', color: '#6b6b80' }
                 }, '✕')
             ),
             React.createElement('div', { style: { flex: 1, padding: '15px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' } },
-                floatingMessages.length === 0 && React.createElement('p', { style: { color: '#999', fontSize: '14px' } }, 'Ask me anything about your project...'),
+                floatingMessages.length === 0 && React.createElement('p', { style: { color: '#6b6b80', fontSize: '14px' } }, 'Ask me anything about your project...'),
                 floatingMessages.map((msg, idx) =>
                     React.createElement('div', {
                         key: idx,
                         style: {
-                            backgroundColor: msg.role === 'user' ? '#6366f1' : '#f3f4f6',
+                            backgroundColor: msg.role === 'user' ? '#6366f1' : 'rgba(255,255,255,0.06)',
                             color: msg.role === 'user' ? 'white' : 'black',
                             padding: '10px 12px',
                             borderRadius: '8px',
@@ -3476,9 +4241,9 @@ function App() {
                         }
                     }, msg.content)
                 ),
-                floatingLoading && React.createElement('div', { style: { color: '#666', fontSize: '13px' } }, 'AI is thinking...')
+                floatingLoading && React.createElement('div', { style: { color: '#a0a0b8', fontSize: '13px' } }, 'AI is thinking...')
             ),
-            React.createElement('div', { style: { padding: '15px', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '8px' } },
+            React.createElement('div', { style: { padding: '15px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', gap: '8px' } },
                 React.createElement('input', {
                     type: 'text',
                     placeholder: 'Ask something...',
@@ -3488,11 +4253,11 @@ function App() {
                     style: {
                         flex: 1,
                         padding: '8px 12px',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '6px',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: '8px',
                         fontSize: '13px',
-                        backgroundColor: 'white',
-                        color: '#000000'
+                        backgroundColor: 'rgba(255,255,255,0.06)',
+                        color: '#f0f0f5'
                     }
                 }),
                 React.createElement('button', {
@@ -3511,8 +4276,8 @@ function App() {
                 }, '→')
             )
         ),
-        React.createElement('footer', { style: { borderTop: '1px solid #e5e7eb', padding: '20px', textAlign: 'center', color: '#9ca3af', fontSize: '12px', backgroundColor: '#ffffff', marginTop: '40px' } },
-            React.createElement('p', { style: { margin: 0 } }, 'Multi-Agent AI Task Management System • Built with React & FastAPI')
+        React.createElement('footer', { style: { borderTop: '1px solid ' + (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'), padding: '20px', textAlign: 'center', color: isDark ? '#4a4a5e' : '#b0b0c0', fontSize: '12px', backgroundColor: isDark ? 'rgba(10, 10, 15, 0.75)' : 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', marginTop: '40px' } },
+            React.createElement('p', { style: { margin: 0 } }, '✦ TaskMaster AI — Multi-Agent Intelligent Productivity Suite • Built with React & FastAPI')
         )
     );
 }
@@ -3536,4 +4301,10 @@ try {
     const msg = error.message || 'Unknown error';
     document.getElementById('root').innerHTML = '<div style="padding:20px; color:red; fontFamily: monospace;"><h2>Error Loading App</h2><p>' + msg + '</p><p style="fontSize:12px;">' + error.stack + '</p></div>';
 }
+
+
+
+
+
+
 

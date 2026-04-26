@@ -1,5 +1,5 @@
 class API {
-      constructor(baseURL = "https://genai-task-manager-backend-232002352100.us-central1.run.app/api") {
+      constructor(baseURL = "https://genai-backend-1013063132017.us-central1.run.app/api") {
         this.baseURL = baseURL;
     }
 

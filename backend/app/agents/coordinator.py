@@ -21,32 +21,68 @@ class CoordinatorAgent:
     
     def analyze_request(self, user_request: str) -> Dict[str, Any]:
         """
-        Analyze user request and determine which tools/sub-agents are needed
+        Analyze user request using Gemini AI to determine which tools/actions are needed
         """
+        import os
+        import json
+        import google.generativeai as genai
+
+        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+            try:
+                model = genai.GenerativeModel('gemini-2.5-flash')
+                prompt = f"""
+                You are an AI Workflow Coordinator. The user has requested: "{user_request}"
+                Analyze the request and output a JSON list of actions to take.
+                Valid action types are: 'create_task', 'list_events', 'create_note'.
+                For 'create_task', provide 'title', 'description', and 'priority' (low, medium, high).
+                For 'create_note', provide 'title' and 'content'.
+                For 'list_events', no parameters are needed.
+                
+                Respond ONLY with valid JSON in this exact format, with no markdown formatting or backticks:
+                [
+                    {{"type": "create_task", "title": "Example", "description": "...", "priority": "high"}}
+                ]
+                """
+                response = model.generate_content(prompt)
+                text = response.text.strip()
+                if text.startswith("```json"):
+                    text = text[7:-3]
+                elif text.startswith("```"):
+                    text = text[3:-3]
+                
+                actions = json.loads(text.strip())
+                return {"request": user_request, "actions": actions, "timestamp": datetime.utcnow().isoformat()}
+            except Exception as e:
+                print(f"Workflow AI Error: {e}")
+        
+        # Fallback to naive keyword matching if AI fails or no key
         request_lower = user_request.lower()
+        actions = []
+        if any(w in request_lower for w in ["task", "todo", "create", "add", "assign"]):
+            actions.append({"type": "create_task", "title": user_request[:50], "description": user_request, "priority": "medium"})
+        if any(w in request_lower for w in ["schedule", "calendar", "meeting", "event", "time"]):
+            actions.append({"type": "list_events"})
+        if any(w in request_lower for w in ["note", "remember", "save", "document"]):
+            actions.append({"type": "create_note", "title": "Auto Note", "content": user_request})
         
-        # Determine task type
-        task_types = []
-        if any(word in request_lower for word in ["task", "todo", "create", "add", "assign"]):
-            task_types.append("task_management")
-        if any(word in request_lower for word in ["schedule", "calendar", "meeting", "event", "time"]):
-            task_types.append("calendar")
-        if any(word in request_lower for word in ["note", "remember", "save", "document"]):
-            task_types.append("notes")
-        
+        if not actions:
+            actions.append({"type": "create_task", "title": "Automated Task", "description": user_request, "priority": "medium"})
+
         return {
             "request": user_request,
-            "task_types": task_types,
+            "actions": actions,
             "timestamp": datetime.utcnow().isoformat(),
         }
     
     def execute_workflow(self, user_request: str) -> Dict[str, Any]:
         """
-        Execute a complete workflow based on user request
+        Execute a complete workflow based on AI analysis
         """
         # Step 1: Analyze request
         analysis = self.analyze_request(user_request)
-        task_types = analysis["task_types"]
+        planned_actions = analysis.get("actions", [])
         
         results = {
             "analysis": analysis,
@@ -55,65 +91,39 @@ class CoordinatorAgent:
         }
         
         # Step 2: Route to appropriate tools
-        if "task_management" in task_types:
-            # Create a sample task from the request
-            action = {
-                "type": "create_task",
-                "description": "Creating task from user request",
-                "result": self.tool_manager.tasks.create_task(
-                    title=user_request[:50],
-                    description=user_request,
-                    priority="medium"
-                ),
-            }
-            results["actions"].append(action)
-        
-        if "calendar" in task_types:
-            # List calendar events
-            action = {
-                "type": "list_events",
-                "description": "Retrieving calendar events",
-                "result": self.tool_manager.calendar.list_events(),
-            }
-            results["actions"].append(action)
-        
-        if "notes" in task_types:
-            # Create a note
-            action = {
-                "type": "create_note",
-                "description": "Creating note from user request",
-                "result": self.tool_manager.notes.create_note(
-                    title=user_request[:50],
-                    content=user_request
-                ),
-            }
-            results["actions"].append(action)
-        
-        # If no specific type detected, create a task and note
-        if not task_types:
-            action = {
-                "type": "create_task",
-                "description": "Creating task from user request",
-                "result": self.tool_manager.tasks.create_task(
-                    title=user_request[:50],
-                    description=user_request,
-                    priority="medium"
-                ),
-            }
-            results["actions"].append(action)
+        for planned_action in planned_actions:
+            action_type = planned_action.get("type")
+            try:
+                if action_type == "create_task":
+                    result = self.tool_manager.tasks.create_task(
+                        title=planned_action.get("title", "New Task"),
+                        description=planned_action.get("description", ""),
+                        priority=planned_action.get("priority", "medium")
+                    )
+                    results["actions"].append({"type": action_type, "description": f"Created task: {result.get('title')}", "result": result})
+                
+                elif action_type == "list_events":
+                    result = self.tool_manager.calendar.list_events()
+                    results["actions"].append({"type": action_type, "description": "Retrieved calendar events", "result": result})
+                
+                elif action_type == "create_note":
+                    result = self.tool_manager.notes.create_note(
+                        title=planned_action.get("title", "New Note"),
+                        content=planned_action.get("content", "")
+                    )
+                    results["actions"].append({"type": action_type, "description": f"Created note: {result.get('title')}", "result": result})
+            except Exception as e:
+                results["actions"].append({"type": action_type, "description": f"Failed: {str(e)}", "result": None})
         
         # Step 3: Generate summary
         summary_parts = []
         for action in results["actions"]:
-            if action["type"] == "create_task":
-                summary_parts.append(f"✓ Created task: {action['result'].get('title', 'Task')}")
-            elif action["type"] == "create_note":
-                summary_parts.append(f"✓ Created note: {action['result'].get('title', 'Note')}")
-            elif action["type"] == "list_events":
-                count = len(action["result"])
-                summary_parts.append(f"✓ Found {count} calendar events")
+            if action["result"]:
+                summary_parts.append(f"✓ {action['description']}")
+            else:
+                summary_parts.append(f"❌ {action['description']}")
         
-        results["summary"] = " | ".join(summary_parts) if summary_parts else "Request processed"
+        results["summary"] = " | ".join(summary_parts) if summary_parts else "Workflow executed successfully, but no actions were taken."
         
         return results
     

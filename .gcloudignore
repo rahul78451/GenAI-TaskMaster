@@ -1,0 +1,46 @@
+# This file specifies files that are *not* uploaded to Google Cloud
+# using gcloud. It follows the same syntax as .gitignore.
+
+# Python virtual environments
+backend/venv/
+venv/
+env/
+
+# Node modules
+node_modules/
+frontend/node_modules/
+
+# IDE files
+.vscode/
+.idea/
+
+# Git
+.git/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database files (local db will be deployed as seed)
+# *.db
+# *.sqlite
+# *.sqlite3
+
+# Backup files
+frontend/app_backup_*.js
+frontend/app_backup_old.js
+frontend/app_backup_simple.js
+frontend/debug.html
+frontend/diagnostic.html
+frontend/test-simple.html
+frontend/test.html
+frontend/tempCodeRunnerFile.js
+
+# Logs
+*.log
+logs/

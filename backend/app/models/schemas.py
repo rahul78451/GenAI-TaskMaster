@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 
 class TaskCreate(BaseModel):
@@ -76,6 +76,39 @@ class NoteResponse(BaseModel):
     id: int
     title: str
     content: str
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class AutomationCreate(BaseModel):
+    name: str
+    enabled: bool = True
+    trigger: Dict[str, Any]
+    condition: Dict[str, Any]
+    action: Dict[str, Any]
+    schedule: Dict[str, Any]
+
+
+class AutomationUpdate(BaseModel):
+    name: Optional[str] = None
+    enabled: Optional[bool] = None
+    trigger: Optional[Dict[str, Any]] = None
+    condition: Optional[Dict[str, Any]] = None
+    action: Optional[Dict[str, Any]] = None
+    schedule: Optional[Dict[str, Any]] = None
+
+
+class AutomationResponse(BaseModel):
+    id: int
+    name: str
+    enabled: bool
+    trigger: Dict[str, Any]
+    condition: Dict[str, Any]
+    action: Dict[str, Any]
+    schedule: Dict[str, Any]
     created_at: datetime
     updated_at: datetime
 

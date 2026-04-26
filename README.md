@@ -1,223 +1,274 @@
-<div align="center">
+# 🤖 GenAI TaskMaster — AI-Powered Smart Daily Assistant
 
-# 🤖 GenAI-TaskMaster
+![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green?logo=fastapi)
+![React](https://img.shields.io/badge/React-18-blue?logo=react)
+![Google Gemini](https://img.shields.io/badge/Google%20Gemini-AI-orange?logo=google)
+![GCP](https://img.shields.io/badge/Google%20Cloud-Deployed-blue?logo=googlecloud)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
-### AI-Powered Multi-Agent Smart Daily Assistant
-
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Click_Here-brightgreen?style=for-the-badge)](https://storage.googleapis.com/genai-task-manager-frontend-2025/index.html)
-[![Backend API](https://img.shields.io/badge/🔗_Backend_API-Cloud_Run-blue?style=for-the-badge)](https://genai-task-manager-backend-232002352100.us-central1.run.app)
-[![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org)
-[![Google Cloud](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com)
-[![Gemini AI](https://img.shields.io/badge/Gemini_AI-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
-
-<p align="center">
-  <strong>A sophisticated AI-powered task management system that coordinates multiple intelligent agents to manage tasks, schedules, notes, and workflows using Google Gemini AI.</strong>
-</p>
-
-<p align="center">
-  <a href="#-features">Features</a> •
-  <a href="#-live-demo">Demo</a> •
-  <a href="#-architecture">Architecture</a> •
-  <a href="#-tech-stack">Tech Stack</a> •
-  <a href="#-getting-started">Setup</a> •
-  <a href="#-api-reference">API</a> •
-  <a href="#-deployment">Deploy</a>
-</p>
+> An intelligent, full-stack productivity platform powered by **Google Gemini AI** — featuring smart task management, AI-powered scheduling, interactive voice chat, project planning, and workflow automation.
 
 ---
 
-![Stars](https://img.shields.io/github/stars/rahul78451/GenAI-TaskMaster?style=social)
-![Forks](https://img.shields.io/github/forks/rahul78451/GenAI-TaskMaster?style=social)
-![Issues](https://img.shields.io/github/issues/rahul78451/GenAI-TaskMaster)
-![License](https://img.shields.io/github/license/rahul78451/GenAI-TaskMaster)
+## 🌟 Live Demo
 
-</div>
+🔗 **Frontend:** [TaskMaster AI Dashboard](https://storage.googleapis.com/thermal-rain-459618-t5-frontend/index.html)  
+🔗 **Backend API:** [FastAPI Backend](https://genai-backend-1013063132017.us-central1.run.app/docs)
 
 ---
 
-## 📸 Screenshots
+## ✨ Key Features
 
-<div align="center">
-<table>
-<tr>
-<td><img width="600" alt="Dashboard" src="https://github.com/user-attachments/assets/ffbec646-f811-4101-a26c-941b6691ff6b" /></td>
-<td><img width="600" alt="Tasks" src="https://github.com/user-attachments/assets/09f9bbb2-b42b-4731-9090-ebcd36b41cd5" /></td>
-</tr>
-<tr>
-<td><img width="600" alt="AI Assistant" src="https://github.com/user-attachments/assets/89547617-48f4-446e-be59-557c00a85f1a" /></td>
-<td><img width="600" alt="Schedule" src="https://github.com/user-attachments/assets/f5b1505c-1e6c-47e9-8746-4c782e2bf304" /></td>
-</tr>
-</table>
-</div>
+### 📊 Smart Dashboard
+- Real-time productivity overview with stats, streaks, and completion tracking
+- Focus Timer (Pomodoro) built into the dashboard
+- Global search across tasks, schedule, notes, and workflows
+- Responsive dark/light mode with glassmorphism design
 
-| Feature | Preview |
-|---------|---------|
-| 📊 **Dashboard** | Real-time productivity overview with task statistics |
-| 📋 **Task Management** | Create, edit, prioritize, and track tasks |
-| 📅 **Smart Scheduling** | AI-powered calendar and event management |
-| 📝 **Notes System** | Rich note-taking with search functionality |
-| 🤖 **AI Assistant** | Conversational AI powered by Google Gemini |
-| ⚙️ **Workflow Engine** | Natural language workflow automation |
+### ✅ Task Management
+- Create, edit, delete tasks with priority levels (High/Medium/Low)
+- Filter by status (Pending/Completed/All)
+- Quick task creation from the dashboard
+- AI-generated task suggestions
 
----
+### 📅 Intelligent Scheduling
+- Calendar event management with date/time support
+- Status tracking (Upcoming/Completed/Cancelled)
+- AI-powered daily plan generation based on task priorities
 
-## ✨ Features
+### 🤖 AI Life Assistant (Gemini-Powered)
+- **Interactive Chat** — Ask anything, get AI-powered responses
+- **Voice Input** — Speak your questions using browser speech recognition
+- **Text-to-Speech** — AI reads responses aloud
+- **Smart Daily Planner** — Auto-generates optimized schedules by priority
+- **AI Suggestions** — Personalized productivity tips & actionable fixes
+- **"Got It!" to Task** — One-click to convert AI suggestions into tasks
 
-### 🚀 Core Features
+### 📝 Notes
+- Rich text notes with color coding
+- Pin important notes to the top
+- Search and filter notes
 
-| Feature | Description | Status |
-|---------|-------------|--------|
-| 📋 **Task Management** | Full CRUD with priority levels (high/medium/low) and status tracking | ✅ Live |
-| 📅 **Schedule Management** | Calendar events with time, location, and AI integration | ✅ Live |
-| 📝 **Notes System** | Create, edit, search, and organize notes | ✅ Live |
-| 🤖 **AI Chat Assistant** | Conversational AI powered by Google Gemini | ✅ Live |
-| ⚙️ **Workflow Automation** | Natural language to multi-step task execution | ✅ Live |
-| 🔍 **Universal Search** | Search across tasks, events, and notes simultaneously | ✅ Live |
-| 💡 **AI Suggestions** | Smart productivity recommendations and fixes | ✅ Live |
-| 📊 **Dashboard Analytics** | Real-time productivity overview and statistics | ✅ Live |
-| 🎤 **Voice Input** | Voice-to-text for hands-free task creation | ✅ Live |
-| 🔊 **Text-to-Speech** | AI responses read aloud | ✅ Live |
-| 💬 **Floating Chat** | Quick access AI assistant on any page | ✅ Live |
-| 🌐 **MCP Integration** | Model Context Protocol for tool coordination | ✅ Live |
+### 📋 Project Planner
+- Goal-based project generation with AI
+- Kanban board / Timeline / List views
+- Task status management (To Do → In Progress → Done)
+- AI suggestions per project
 
-### 🎯 AI Capabilities
+### ⚙️ Workflow Automation
+- Multi-step workflow builder
+- AI-powered workflow generation from natural language
+- Visual pipeline with step tracking
 
-- **Natural Language Processing** — Understand complex task descriptions
-- **Smart Task Prioritization** — AI-powered priority recommendations
-- **Conflict Detection** — Identify scheduling conflicts automatically
-- **Daily Plan Generation** — Create optimized daily plans
-- **Productivity Analysis** — Analyze work patterns and suggest improvements
-- **Multi-step Workflows** — Execute complex operations from simple commands
+### 📈 Data Analysis
+- Task completion analytics
+- Productivity trends and insights
+- Visual charts powered by Chart.js
 
 ---
 
-## 🌐 Live Demo
+## 🏗️ Tech Stack
 
-| Component | URL | Status |
-|-----------|-----|--------|
-| 🖥️ **Frontend** | [Live App](https://storage.googleapis.com/genai-task-manager-frontend-2025/index.html) | ✅ Online |
-| ⚙️ **Backend API** | [API Docs](https://genai-task-manager-backend-232002352100.us-central1.run.app/docs) | ✅ Online |
-| 📡 **Health Check** | [Status](https://genai-task-manager-backend-232002352100.us-central1.run.app/health) | ✅ Healthy |
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | React 18 (CDN), Vanilla CSS, Chart.js |
+| **Backend** | Python, FastAPI, SQLAlchemy, SQLite |
+| **AI Engine** | Google Gemini API (gemini-2.0-flash) |
+| **Hosting** | Google Cloud Run (Backend), Google Cloud Storage (Frontend) |
+| **Design** | Glassmorphism, CSS Custom Properties, Dark/Light Theme |
 
-### Try It Now!
+---
+
+## 📁 Project Structure
+
+```
+GenAIProject/
+├── backend/
+│   ├── main.py              # FastAPI app with all API routes
+│   ├── requirements.txt     # Python dependencies
+│   ├── Dockerfile           # Container config for Cloud Run
+│   ├── Dockerfile.prod      # Production Docker config
+│   ├── .env.example         # Environment variable template
+│   └── reset_db.py          # Database reset utility
+├── frontend/
+│   ├── index.html           # Main HTML with CSS design system
+│   ├── app.js               # Core React application (Dashboard, Tasks, Schedule, Notes, AI Assistant)
+│   ├── api.js               # API client configuration
+│   ├── project_planner.js   # Project Planner component
+│   ├── workflow_new.js      # Workflow Automation component
+│   ├── data_analysis.js     # Data Analysis component
+│   └── package.json         # Frontend metadata
+├── .gitignore               # Git ignore rules
+├── .env.example             # Root environment template
+├── deploy-gcp.ps1           # Windows GCP deployment script
+├── deploy-gcp.sh            # Linux/Mac GCP deployment script
+├── cloudbuild.yaml           # Google Cloud Build config
+├── docker-compose.yml       # Local Docker setup
+├── Procfile                 # Process configuration
+└── README.md                # This file
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.10+
+- Google Gemini API Key ([Get one here](https://aistudio.google.com/app/apikey))
+
+### 1. Clone the Repository
 ```bash
-# Test the AI Chat
-curl -X POST "https://genai-task-manager-backend-232002352100.us-central1.run.app/api/ai-chat" \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Hello, what can you do?"}'
+git clone https://github.com/rahul78451/GenAI-TaskMaster.git
+cd GenAI-TaskMaster
+```
 
-### 🧠 Multi-Agent AI Architecture
+### 2. Set Up Backend
+```bash
+cd backend
+python -m venv venv
 
-┌────────────────────────────────────────────────────────────────┐
-│                        CLIENT LAYER                            │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │              React 18 + Tailwind CSS                     │  │
-│  │  ┌──────┐ ┌──────┐ ┌────────┐ ┌─────┐ ┌──────────────┐ │  │
-│  │  │Dashbd│ │Tasks │ │Schedule│ │Notes│ │  AI Assistant │ │  │
-│  │  └──────┘ └──────┘ └────────┘ └─────┘ └──────────────┘ │  │
-│  │              ↕ API Client (fetch)                        │  │
-│  └──────────────────────────────────────────────────────────┘  │
-│                            ↕ HTTPS                             │
-├────────────────────────────────────────────────────────────────┤
-│                        API LAYER                               │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │              FastAPI + Uvicorn                            │  │
-│  │  ┌──────────┐ ┌───────────┐ ┌──────────┐ ┌───────────┐  │  │
-│  │  │/api/tasks│ │/api/sched │ │/api/notes│ │/api/ai-chat│  │  │
-│  │  └──────────┘ └───────────┘ └──────────┘ └───────────┘  │  │
-│  └──────────────────────────────────────────────────────────┘  │
-│                            ↕                                   │
-├────────────────────────────────────────────────────────────────┤
-│                    INTELLIGENCE LAYER                          │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │           Multi-Agent Coordinator                        │  │
-│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌───────────┐  │  │
-│  │  │Task Agent│ │Sched Agnt│ │Note Agent│ │Tool Agent  │  │  │
-│  │  └──────────┘ └──────────┘ └──────────┘ └───────────┘  │  │
-│  │                     ↕                                    │  │
-│  │            Google Gemini AI API                          │  │
-│  └──────────────────────────────────────────────────────────┘  │
-│                            ↕                                   │
-├────────────────────────────────────────────────────────────────┤
-│                      DATA LAYER                                │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │         SQLite + SQLAlchemy ORM                          │  │
-│  │  ┌──────┐ ┌────────┐ ┌─────┐ ┌──────────┐              │  │
-│  │  │Tasks │ │Schedule│ │Notes│ │Workflows │              │  │
-│  │  └──────┘ └────────┘ └─────┘ └──────────┘              │  │
-│  └──────────────────────────────────────────────────────────┘  │
-│                                                                │
-├────────────────────────────────────────────────────────────────┤
-│                   DEPLOYMENT LAYER                             │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐  │
-│  │  Google Cloud    │  │ Google Cloud    │  │   Docker     │  │
-│  │  Run (Backend)   │  │ Storage (FE)   │  │  Container   │  │
-│  └─────────────────┘  └─────────────────┘  └──────────────┘  │
-└────────────────────────────────────────────────────────────────┘
+# Windows
+venv\Scripts\activate
+# Linux/Mac
+source venv/bin/activate
 
-User Request: "Create a high priority task for tomorrow's meeting and add it to my schedule"
-                                    │
-                                    ▼
-                          ┌─────────────────┐
-                          │   Coordinator    │
-                          │     Agent        │
-                          └─────────────────┘
-                           │              │
-                    ┌──────┘              └──────┐
-                    ▼                            ▼
-            ┌──────────────┐            ┌──────────────┐
-            │  Task Agent  │            │Schedule Agent│
-            │              │            │              │
-            │ Creates task │            │Creates event │
-            │ priority:high│            │ tomorrow     │
-            └──────────────┘            └──────────────┘
-                    │                            │
-                    └──────────┬─────────────────┘
-                               ▼
-                    ┌─────────────────┐
-                    │  Unified Result  │
-                    │  Task + Event    │
-                    │  Created ✅      │
-                    └─────────────────┘
+pip install -r requirements.txt
+```
 
+### 3. Configure Environment Variables
+```bash
+# Copy the template
+cp .env.example .env
 
-##📂 Project Structure
+# Edit .env and add your Gemini API key
+GEMINI_API_KEY=your_gemini_api_key_here
+```
 
-GenAI-TaskMaster/
-├── 📂 backend/
-│   ├── 📂 app/
-│   │   ├── 📂 agents/              # AI Agent System
-│   │   │   ├── coordinator.py      # Main coordinator agent
-│   │   │   ├── task_agent.py       # Task management agent
-│   │   │   ├── schedule_agent.py   # Schedule management agent
-│   │   │   ├── note_agent.py       # Notes management agent
-│   │   │   └── tool_agent.py       # MCP tool agent
-│   │   ├── 📂 tools/               # MCP Tool Integration
-│   │   │   ├── mcp_tools.py        # Model Context Protocol tools
-│   │   │   ├── task_tools.py       # Task-specific tools
-│   │   │   ├── schedule_tools.py   # Schedule-specific tools
-│   │   │   └── note_tools.py       # Note-specific tools
-│   │   ├── 📂 models/              # Data Models
-│   │   │   ├── schemas.py          # Pydantic schemas
-│   │   │   └── database.py         # SQLAlchemy models
-│   │   └── __init__.py
-│   ├── main.py                     # FastAPI application entry point
-│   ├── requirements.txt            # Python dependencies
-│   ├── Dockerfile                  # Docker container config
-│   ├── Dockerfile.prod             # Production Docker config
-│   ├── .env.example                # Environment template
-│   └── test_*.py                   # Test files
-├── 📂 frontend/
-│   ├── index.html                  # Main HTML entry point
-│   ├── app.js                      # React application (190KB)
-│   ├── api.js                      # API client class
-│   └── package.json                # Frontend config
-├── docker-compose.yml              # Docker Compose config
-├── cloudbuild.yaml                 # Cloud Build config
-├── deploy-gcp.sh                   # GCP deployment script
-├── app.yaml                        # App Engine config
-├── .gitignore                      # Git ignore rules
-├── LICENSE                         # MIT License
-└── README.md                       # This file
+### 4. Run the Backend
+```bash
+cd backend
+uvicorn main:app --reload --port 8000
+```
+
+### 5. Open the Frontend
+Open `frontend/index.html` in your browser, or serve it:
+```bash
+cd frontend
+python -m http.server 5500
+```
+Then visit: `http://localhost:5500`
+
+> **Note:** For local development, update the API URL in `frontend/app.js` to point to `http://localhost:8000`.
+
+---
+
+## ☁️ Cloud Deployment (Google Cloud Platform)
+
+### Backend → Cloud Run
+```bash
+cd backend
+gcloud run deploy genai-backend \
+  --source . \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --set-env-vars="GEMINI_API_KEY=your_key"
+```
+
+### Frontend → Cloud Storage
+```bash
+# Create bucket
+gcloud storage buckets create gs://YOUR_BUCKET_NAME --location=us-central1
+
+# Upload frontend files
+gcloud storage cp frontend/index.html gs://YOUR_BUCKET_NAME/
+gcloud storage cp frontend/app.js gs://YOUR_BUCKET_NAME/
+gcloud storage cp frontend/api.js gs://YOUR_BUCKET_NAME/
+gcloud storage cp frontend/project_planner.js gs://YOUR_BUCKET_NAME/
+gcloud storage cp frontend/workflow_new.js gs://YOUR_BUCKET_NAME/
+gcloud storage cp frontend/data_analysis.js gs://YOUR_BUCKET_NAME/
+
+# Make bucket public
+gcloud storage buckets add-iam-policy-binding gs://YOUR_BUCKET_NAME \
+  --member=allUsers --role=roles/storage.objectViewer
+```
+
+---
+
+## 🔌 API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/tasks` | List all tasks |
+| `POST` | `/api/tasks` | Create a new task |
+| `PUT` | `/api/tasks/{id}` | Update a task |
+| `DELETE` | `/api/tasks/{id}` | Delete a task |
+| `GET` | `/api/schedule` | List schedule events |
+| `POST` | `/api/schedule` | Create a schedule event |
+| `GET` | `/api/notes` | List all notes |
+| `POST` | `/api/notes` | Create a note |
+| `POST` | `/api/ai-chat` | Chat with AI assistant |
+| `GET` | `/api/suggestions` | Get AI productivity suggestions |
+| `GET` | `/api/stats` | Get dashboard statistics |
+| `GET` | `/docs` | Swagger API documentation |
+
+---
+
+## 🎨 Screenshots
+
+### Dashboard (Dark Mode)
+The dashboard features a glassmorphism design with real-time stats, focus timer, and productivity tracking.
+
+### AI Assistant
+Interactive chat with voice input/output, daily plan generation, and smart suggestions that can be converted to tasks with one click.
+
+### Project Planner
+Kanban-style project management with AI-powered task generation and progress tracking.
+
+---
+
+## 🔒 Security
+
+- All API keys are stored in `.env` files (excluded from Git)
+- `.gitignore` blocks `.env`, `*.key`, `*.pem`, `*credentials*.json`, and database files
+- CORS is configured for production domains
+- No secrets are committed to the repository
+
+---
+
+## 🛣️ Roadmap
+
+- [ ] Cloud SQL migration (replace SQLite with PostgreSQL)
+- [ ] User authentication (Google OAuth)
+- [ ] Mobile-responsive PWA
+- [ ] Task collaboration & sharing
+- [ ] Email/notification reminders
+- [ ] Advanced AI analytics with historical trends
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 👨‍💻 Author
+
+**Rahul** — [@rahul78451](https://github.com/rahul78451)
+
+---
+
+<p align="center">
+  Built with ❤️ using Google Gemini AI, FastAPI & React
+</p>
